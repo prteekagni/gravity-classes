@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Profile</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab3"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-row *ngIf="isloaded">
+    <ion-col size="12" class="ion-text-center ion-margin-top">
+      <img src="../../assets/logo.png" alt="" style="width:150px;
+    border-radius: 50%;" />
+      <ion-card>
+        <ion-card-content>
+          <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+            <ion-item>
+              <ion-label position="floating">Name <ion-text color="danger">*</ion-text>
+              </ion-label>
+              <ion-input required type="text" [(ngModel)]="user.displayName" name="displayName"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">E-Mail <ion-text color="danger">*</ion-text>
+              </ion-label>
+              <ion-input required type="email" [(ngModel)]="user.email" name="email"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Phone Number <ion-text color="danger">*</ion-text>
+              </ion-label>
+              <ion-input required type="number" [(ngModel)]="user.phoneNumber" name="phoneNumber"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">School Name <ion-text color="danger">*</ion-text>
+              </ion-label>
+              <ion-input required type="text" [(ngModel)]="user.schoolName" name="schoolName"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Class <ion-text color="danger">*</ion-text>
+              </ion-label>
+              <ion-select value="9" okText="Okay" cancelText="Dismiss" [(ngModel)]="user.class" name="class">
+                <ion-select-option value="9">Class 9</ion-select-option>
+                <ion-select-option value="10">Class 10</ion-select-option>
+                <ion-select-option value="11">Class 11</ion-select-option>
+                <ion-select-option value="12">Class 12</ion-select-option>
+              </ion-select>
+
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Address <ion-text color="danger">*</ion-text>
+              </ion-label>
+              <ion-input required type="text" [(ngModel)]="user.address" name="address"></ion-input>
+            </ion-item>
+            <ion-button expand="block" color="primary" type="submit" [disabled]="loginForm.invalid">
+              Update Profile
+            </ion-button>
+          </form>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+</ion-content>

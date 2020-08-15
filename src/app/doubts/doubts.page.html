@@ -1,0 +1,99 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Doubts</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ng-container *ngIf="isProfileCompleted; else elseTemplate">
+    <ion-row>
+      <ion-col size="12">
+        <ion-card class="ion-text-center">
+          <ion-card-header>
+            <ion-card-title>Ask Doubts</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <form (ngSubmit)="submitDoubts(doubtform.value)" #doubtform="ngForm">
+              <ion-item style="border-radius: 15px;">
+                <ion-input type="text" placeholder="Add Title"> </ion-input>
+              </ion-item>
+              <ion-item style="
+               
+                border-radius: 15px;
+               
+                margin-top: 5px;
+              ">
+                <!-- <ion-input type="textarea" rows="6" cols="20" placeholder="Add Doubt" autoGrow="true" wrap="soft">
+              </ion-input> -->
+                <ion-textarea rows="4" cols="20" placeholder="Enter any notes here..." (ngModel)="doubt.description"
+                  name="description"></ion-textarea>
+              </ion-item>
+              <ion-item *ngIf="hasImage">
+                <img [src]="this.imageUrl" alt="" />
+              </ion-item>
+              <ion-item lines="none" class="ion-text-right">
+                <!-- <ion-icon name="attach-outline"></ion-icon> -->
+                <ion-button (click)="uploadPhoto()" fill="clear" shape="round" slot="end">
+                  Add File
+                </ion-button>
+              </ion-item>
+              <ion-button type="submit" expand="block" fill="solid" shape="" color="primary">
+                Submit
+              </ion-button>
+            </form>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12" class="ion-text-center">
+        <h1 style="color:var(--ion-color-danger)">Doubts</h1>
+        <ion-item>
+          <ion-label style="position: absolute; right: 60px;">Show All</ion-label>
+          <ion-toggle [(ngModel)]="doubtfrom" style="position: absolute; right: 0px;"
+            (ionChange)="doubtToggleChanged($event)"></ion-toggle>
+        </ion-item>
+
+        <ion-list>
+          <ion-item *ngFor="let item of doubts" class="doubt-card">
+            <ion-card style="width: 96%;" (click)="doubtDetail(item)">
+              <ion-card-header>
+                <ion-card-subtitle> </ion-card-subtitle>
+                <ion-card-title>
+                  <p style="margin-bottom: 0px;" class="card-heading">
+                    {{item.title}}
+                  </p>
+                  <p class="date">{{item.createdAt.toDate() | date}}</p>
+                </ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <div style="display: flex; flex-direction: row;">
+                  <p class="card-description">
+                    {{item?.description}}
+                  </p>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ng-container>
+  <ng-template #elseTemplate>
+
+    <div style="    display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;">
+      <h1>Profile not completed</h1>
+      <ion-button (click)="completeProfile()" shape="round">
+        Complete Profile
+      </ion-button>
+    </div>
+
+  </ng-template>
+</ion-content>

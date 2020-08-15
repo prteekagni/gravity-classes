@@ -1,0 +1,42 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 94vh;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0%;
+  /* justify-content: center; */
+  align-items: center;
+}
+
+.img-logo {
+  width: 125px;
+  z-index: 1;
+}
+
+p {
+  color: white;
+  z-index: 1;
+  font-weight: bold;
+  font-family: Montserrat-Regular;
+  font-size: xxx-large;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.app-sub-title {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: larger;
+}
+
+.fire-logo {
+  z-index: 1111;
+}

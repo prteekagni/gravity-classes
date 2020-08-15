@@ -1,5 +1,7 @@
 {
   "name": "app-gravity-classes",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

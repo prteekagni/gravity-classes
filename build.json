@@ -1,0 +1,18 @@
+{
+  "android": {
+    "release": {
+      "keystore": "platforms\\android\\gravity-classes.keystore",
+      "storePassword": "gravity",
+      "alias": "gc",
+      "password": "gravity",
+      "keystoreType": "jks"
+    },
+    "debug": {
+      "keystore": "platforms\\android\\gravity-classes.keystore",
+      "storePassword": "gravity",
+      "alias": "gc",
+      "password": "gravity",
+      "keystoreType": "jks"
+    }
+  }
+}

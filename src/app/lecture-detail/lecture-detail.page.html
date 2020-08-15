@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Class Notes</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">
+        <ion-icon slot="start" name="close"></ion-icon>
+
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-slides mode="ios" pager="ios" scrollbar="ios" #slides>
+    <ion-slide *ngFor="let item of items">
+      <img [src]="item" alt="">
+      <p>{{index}}</p>
+    </ion-slide>
+  </ion-slides>
+</ion-content>

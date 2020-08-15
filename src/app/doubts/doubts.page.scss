@@ -1,0 +1,19 @@
+ion-card-subtitle {
+  font-size: xx-small;
+}
+.card-heading {
+  margin-top: 5px;
+}
+
+ion-item {
+  --padding-start: 0px;
+}
+.doubt-card ion-card {
+  width: 96vw;
+  left: 2vw;
+}
+
+ion-input,
+ion-textarea {
+  --padding-start: 10px !important;
+}

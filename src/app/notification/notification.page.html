@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{note?.title}}</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab2"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container *ngIf="isloaded; else elseTemplate">
+    <ion-row>
+      <ion-col size="12">
+        <div class="video-list" no-padding mode="md">
+          <div class="imagediv" (click)="playVideoLocal()">
+            <!-- <img [src]="note.image" alt="" style="width: 100%" /> -->
+            <video id="myVideo" controls playsinline width="100%" preload="auto" poster="{{note.image}}">
+              <source src="https://videobucketgrvity.s3.ap-south-1.amazonaws.com/fluidPressure_04~2.mp4"
+                type="video/mp4" />
+            </video>
+            <div class="inner">
+              <!-- <b>4.49</b> -->
+
+            </div>
+          </div>
+          <div *ngIf="!dvStatus">
+            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+          </div>
+          <div class="details">
+            <div class="title-block">
+              <div class="title">
+                {{note.title}}
+                <ion-icon slot="end" name="download-outline" style="
+                      margin-right: 0px;
+                      position: absolute;
+                      right: 15px;
+                      font-size: x-large;
+                    "></ion-icon>
+              </div>
+
+              <div class="extra">
+                <div class="date">{{note.createdAt.toDate() | date}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12">
+        <p class="card-description" style="margin-top: 0px;margin-left: 10px;">
+          {{note.description}}
+        </p>
+        <ion-button (click)="onClick()" expand="block" fill="solid">
+          PDF Notes
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ng-container>
+  <ng-template #elseTemplate>
+    <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+  </ng-template>
+</ion-content>
