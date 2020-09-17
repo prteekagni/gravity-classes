@@ -28,7 +28,10 @@ export class AuthService {
   }
 
   getUserDetail(id) {
-    return this.angularFireStore.firestore.collection("users").doc(id).get();
+    return this.angularFireStore.firestore
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .get();
   }
 
   updateDisplayName(id, displayName) {
@@ -63,5 +66,19 @@ export class AuthService {
 
   async logOut() {
     return this.angularFireAuth.signOut();
+  }
+
+  async checkIfUserValid(uid) {
+    return this.angularFireStore.firestore
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((res: any) => {
+        if (res.exists) {
+          let user = res.data();
+          if (user.active == true) return true;
+          else return false;
+        }
+      });
   }
 }

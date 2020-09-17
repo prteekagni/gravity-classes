@@ -11,8 +11,7 @@ const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(["login"]);
 const routes: Routes = [
   {
     path: "",
-    loadChildren: () =>
-      import("./tabs/tabs.module").then((m) => m.TabsPageModule),
+    loadChildren: () => import("./tabs/tabs.module").then((m) => m.TabsPageModule),
     canActivate: [AngularFireAuthGuard],
     data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
@@ -51,6 +50,10 @@ const routes: Routes = [
       import("./lecture-detail/lecture-detail.module").then(
         (m) => m.LectureDetailPageModule
       ),
+  },
+  {
+    path: 'generic-modal',
+    loadChildren: () => import('./generic-modal/generic-modal.module').then( m => m.GenericModalPageModule)
   },
 ];
 @NgModule({

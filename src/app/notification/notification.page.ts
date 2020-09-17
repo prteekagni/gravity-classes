@@ -1,32 +1,18 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-
-import {
-  StreamingMedia,
-  StreamingVideoOptions,
-} from "@ionic-native/streaming-media/ngx";
-
-import {
-  DocumentViewer,
-  DocumentViewerOptions,
-} from "@ionic-native/document-viewer/ngx";
-
 import { File } from "@ionic-native/file/ngx";
 import {
   FileTransfer,
   FileTransferObject,
 } from "@ionic-native/file-transfer/ngx";
 import { Subscription } from "rxjs";
-import { Platform, ModalController } from "@ionic/angular";
-import { PreviewAnyFile } from "@ionic-native/preview-any-file/ngx";
+import { Platform, ModalController, LoadingController } from "@ionic/angular";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DataService } from "../services/data.service";
-import { FileOpener } from "@ionic-native/file-opener/ngx";
-import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
-import { VideoPlayer } from "@ionic-native/video-player/ngx";
-
 import { LectureDetailPage } from "../lecture-detail/lecture-detail.page";
 import { SharedService } from "../services/shared.service";
+import { FileEncryption } from "@ionic-native/file-encryption/ngx";
 
+declare var cordova;
 @Component({
   selector: "app-notification",
   templateUrl: "./notification.page.html",
@@ -40,8 +26,9 @@ export class NotificationPage implements OnInit {
   note;
   isloaded: boolean = false;
   dvStatus;
+  hasVideo: boolean = false;
+  encryptKey = "gravityClassesKey";
   constructor(
-    private streamingMedia: StreamingMedia,
     private platform: Platform,
     private activatedRouter: ActivatedRoute,
     private dataService: DataService,
@@ -50,7 +37,8 @@ export class NotificationPage implements OnInit {
     private modalController: ModalController,
     private transfer: FileTransfer,
     private file: File,
-    private VideoPlayer: VideoPlayer
+    private fileEncrption: FileEncryption,
+    private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
@@ -62,6 +50,9 @@ export class NotificationPage implements OnInit {
           if (res.exists) {
             this.note = res.data();
             this.note.id = res.id;
+            if (this.note.videoLink !== "") {
+              this.hasVideo = true;
+            }
             this.isloaded = true;
           } else {
             console.log("Note");
@@ -72,18 +63,6 @@ export class NotificationPage implements OnInit {
   }
 
   playVideoLocal() {
-    let options: StreamingVideoOptions = {
-      successCallback: () => {
-        console.log("Video played");
-      },
-      errorCallback: (e) => {
-        console.log("Error streaming");
-      },
-      orientation: "landscape",
-      shouldAutoClose: true,
-      controls: true,
-    };
-    this.streamingMedia.playVideo(this.note.videoLink, options);
     // this.sharedService.displayLC();
     // this.VideoPlayer.play(this.note.videoLink, {
     //   scalingMode: 1,
@@ -94,11 +73,101 @@ export class NotificationPage implements OnInit {
   }
 
   async onClick() {
-    const modal = await this.modalController.create({
-      component: LectureDetailPage,
-      componentProps: { items: this.note.notesImage },
+    let url: any = [];
+    let length = this.note.notesImage.length;
+    console.log(length);
+
+    this.file
+      .checkDir(this.file.applicationStorageDirectory, this.note.title)
+      .then(
+        async () => {
+          console.log("directory already present");
+          let items = JSON.parse(localStorage.getItem("Keys"));
+          const modal = await this.modalController.create({
+            component: LectureDetailPage,
+            componentProps: { items: items, title: "Notes" },
+          });
+          await modal.present();
+        },
+        async (err) => {
+          // this.sharedService.displayLC();
+          const loading = await this.loadingController.create({
+            cssClass: "my-custom-class",
+            message: "Downloading Notes.",
+            
+          });
+          await loading.present();
+          const fileTransfer: FileTransferObject = this.transfer.create();
+          for (var i = 0; i < this.note.notesImage.length; i++) {
+            await this.uploadImageAsPromise(this.note.notesImage[i]).then(
+              async (res: any) => {
+                console.log(res);
+                console.log("download complete: " + res);
+                url.push(
+                  (<any>window).Ionic.WebView.convertFileSrc(res.toURL())
+                );
+                console.log(url);
+                if (length == url.length) {
+                  // this.sharedService.dismissLC();
+                  loading.dismiss();
+                  localStorage.setItem("Keys", JSON.stringify(url));
+                  let items = JSON.parse(localStorage.getItem("Keys"));
+                  const modal = await this.modalController.create({
+                    component: LectureDetailPage,
+                    componentProps: { items: items, title: "Notes" },
+                  });
+                  await modal.present();
+                }
+              }
+            );
+          }
+        }
+      );
+  }
+
+  async uploadImageAsPromise(imageFile) {
+    const fileTransfer: FileTransferObject = this.transfer.create();
+
+    return new Promise((resolve, reject) => {
+      fileTransfer
+        .download(
+          imageFile,
+          this.file.applicationStorageDirectory +
+            "/" +
+            this.note.title +
+            "/" +
+            this.note.id +
+            new Date().getTime() +
+            ".png"
+        )
+        .then(
+          (entry) => {
+            // this.fileEncrption
+            //   .encrypt(entry.toURL(), this.encryptKey)
+            //   .then((res) => {
+            //     resolve(entry);
+            //   });
+
+            // cordova.plugins.disusered.safe.encrypt(
+            //   entry.toURL(),
+            //   this.encryptKey,
+            //   success,
+            //   error
+            // );
+            resolve(entry);
+
+            function success(encryptedFile) {
+              console.log("Encrypted file: " + encryptedFile);
+            }
+            function error() {
+              console.log("Error with cryptographic operation");
+            }
+          },
+          (error) => {
+            // handle error
+          }
+        );
     });
-    await modal.present();
   }
 
   initializeBackButtonCustomHandler(): void {

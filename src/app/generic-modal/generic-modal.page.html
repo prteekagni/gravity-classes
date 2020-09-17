@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Submit {{type | titlecase}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button style="color: white;" (click)="dismiss()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+  <ng-container *ngIf="type == 'doubt'">
+    <ion-row>
+      <ion-col size="12">
+        <ion-card class="ion-text-center">
+          <ion-card-header>
+            <ion-card-title>Ask Doubts</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <form (ngSubmit)="submitDoubts(doubtform)" #doubtform="ngForm">
+              <ion-item style="border-radius: 15px;">
+                <ion-input type="text" placeholder="Topic" name="title" (ngModel)="doubt.title">
+                </ion-input>
+              </ion-item>
+              <!-- <ion-item>
+                <ion-label position="floating">Class <ion-text color="danger">*</ion-text>
+                </ion-label>
+                <ion-select value="9" okText="Okay" cancelText="Dismiss" (ngModel)="doubt.class" name="class">
+                  <ion-select-option value="{{user.class}}">Class {{user?.class | titlecase}}
+                  </ion-select-option>
+
+                </ion-select>
+              </ion-item> -->
+              <ion-item>
+                <ion-label position="floating">Subject <ion-text color="danger">*</ion-text>
+                </ion-label>
+                <ion-select value="physics" okText="Okay" cancelText="Dismiss" (ngModel)="doubt.subject" name="subject">
+                  <ion-select-option value="{{item}}" *ngFor="let item of user?.subjects">{{item | titlecase}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item style="
+                  border-radius: 15px;
+                  margin-top: 5px;
+                ">
+                <ion-textarea rows="4" cols="20" placeholder="Enter your question" (ngModel)="doubt.description"
+                  name="description"></ion-textarea>
+              </ion-item>
+              <ion-item [hidden]="!hasImage">
+                <img [src]="this.imageUrl" alt="" style="    max-height: 300px;
+    max-width: 200px;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%);" #doubtImage />
+                <ion-spinner *ngIf="spinner"></ion-spinner>
+              </ion-item>
+              <!-- <ion-item *ngIf="!hasImage">
+                <img src="../../assets/loginbg.png" alt="" style="max-height: 300px;width: 100%;" />
+              </ion-item> -->
+              <ion-item lines="none" class="ion-text-right">
+                <ion-button (click)="uploadPhoto()" fill="clear" shape="round" slot="end">
+                  Add File
+                </ion-button>
+              </ion-item>
+              <ion-button type="submit" expand="block" fill="solid" shape="" color="primary">
+                Submit
+              </ion-button>
+            </form>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ng-container>
+  <ng-container *ngIf="type"> </ng-container>
+</ion-content>

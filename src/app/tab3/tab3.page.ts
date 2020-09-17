@@ -4,7 +4,8 @@ import { DataService } from "../services/data.service";
 import { Router } from "@angular/router";
 import { SharedService } from "../services/shared.service";
 import { Platform, AlertController } from "@ionic/angular";
-
+import * as firebase from "firebase";
+import { SocialSharing } from "@ionic-native/social-sharing/ngx";
 @Component({
   selector: "app-tab3",
   templateUrl: "tab3.page.html",
@@ -21,7 +22,8 @@ export class Tab3Page {
     private router: Router,
     private sharedService: SharedService,
     private platform: Platform,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private socialSharing: SocialSharing
   ) {}
 
   // ngOnInit(): void {
@@ -36,27 +38,35 @@ export class Tab3Page {
   }
   getUserInformation() {
     this.authService.getUserInformation().then((user) => {
-      this.authService
-        .getUserDetail(user.providerData[0].uid)
-        .then((res: any) => {
-          if (res.exists) {
-            this.user = res.data();
-            this.firstcharacter = this.user.displayName.substring(0, 1);
-            this.isloaded = true;
-          }
-        });
+      this.authService.getUserDetail(user.uid).then((res: any) => {
+        if (res.exists) {
+          this.user = res.data();
+          this.firstcharacter = this.user.displayName.substring(0, 1);
+          this.isloaded = true;
+        }
+      });
     });
   }
 
-  shareApp() {}
+  shareApp() {
+    this.socialSharing.share(
+      "Gravity Classes By Er Prashant Kumar for Physics and Mathematics(ISC , NEET , JEE).",
+      "",
+      "https://firebasestorage.googleapis.com/v0/b/gravityclasses-1498f.appspot.com/o/Untitled-1.png?alt=media&token=31d15bdc-2b3f-4eb3-912b-10a7b7dd44c6",
+      "https://play.google.com/store/apps/details?id=io.gravityclass.app"
+    );
+  }
 
   openTermsAndConditions() {}
 
   openPrivacyPage() {}
 
-  logOut() {
+  async logOut() {
+    let user = firebase.auth().currentUser;
     // this.sharedService.displayLC();
-    this.authService.logOut().then(() => {
+
+    this.dataService.setLoginStatus(user.uid, false).then(() => {
+      this.authService.logOut().then(() => {});
       // this.sharedService.dismissLC();
       setTimeout(() => {
         this.router.navigate(["login"]);
@@ -92,7 +102,7 @@ export class Tab3Page {
       header: "Contact Us",
       message: `Gravity Classes by Parshant Kumar. 
         <br>Email : prashant.it2012@gmail.com.
-        <br> Phone Number : 8851610111.`,
+        <br> Phone Number : 6387056155.`,
       buttons: ["OK"],
     });
 

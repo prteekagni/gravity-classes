@@ -9,6 +9,7 @@ import { SharedService } from "../services/shared.service";
 import { Router } from "@angular/router";
 import { DataService } from "../services/data.service";
 import { AppMinimize } from "@ionic-native/app-minimize/ngx";
+import { FCM } from "cordova-plugin-fcm-with-dependecy-updated/ionic/ngx";
 
 @Component({
   selector: "app-login",
@@ -27,7 +28,8 @@ export class LoginPage implements OnInit {
     private dataService: DataService,
     private router: Router,
     private platform: Platform,
-    private appMinimize: AppMinimize
+    private appMinimize: AppMinimize,
+    private fcm: FCM
   ) {}
 
   ngOnInit() {}
@@ -52,7 +54,13 @@ export class LoginPage implements OnInit {
       .signInWithCredential(accessToken, accessSecret)
       .then((response) => {
         let userObject: any;
-        const tempObject = response.user.providerData[0];
+        let tempObject = {
+          email: response.user.email,
+          uid: response.user.uid,
+          displayName: response.user.displayName,
+          photoURL: response.user.photoURL,
+          providerId: response.user.providerId,
+        };
         userObject = {
           role: "user",
           ...tempObject,
@@ -60,50 +68,75 @@ export class LoginPage implements OnInit {
           accessSecret: accessSecret,
           token: "",
           isProfileCompleted: false,
+          active: false,
+          subjects: "",
         };
         this.dataService.checkIfUserExists(tempObject.uid).then(
           (res: any) => {
             if (res.exists) {
               let user = res.data();
-              console.log(user);
-              if (user.isProfileCompleted) {
-                localStorage.setItem("isCompleted", "true");
-                localStorage.setItem("Class", user.class);
+              if (!user.isLoggedIn) {
+                this.sharedService.dismissLC();
+                this.dataService.subscribeToTopic(user.class);
+                user.subjects.forEach((element) => {
+                  console.log(element);
+                  this.sharedService.subscribeToTopic(element + user.class);
+                });
+                this.dataService
+                  .setLoginStatus(tempObject.uid, true)
+                  .then(() => {});
+                this.authService.disconnectFromGoogle().then(() => {});
+                if (user.isProfileCompleted) {
+                  localStorage.setItem("isCompleted", "true");
+                  localStorage.setItem("Class", user.class);
+                  this.router.navigate(["/tabs/tab1"]);
+                } else {
+                  this.router.navigate(["/profile"], {
+                    queryParams: { uid: tempObject.uid, root: "tabs/tab1" },
+                  });
+                }
+                this.fcm.getToken().then((res: any) => {
+                  this.dataService
+                    .updateToken(tempObject.uid, res)
+                    .then((res: any) => {
+                      localStorage.setItem("Token", "true");
+                      console.log("Device Token Updated");
+                    });
+                });
+              } else {
+                this.sharedService.dismissLC();
+                this.dataService.addLoginLogs(userObject).then(
+                  () => {
+                    this.sharedService.errorToast(
+                      "Already Logged In Other Device"
+                    );
+                  },
+                  (err) => {
+                    this.sharedService.errorToast(
+                      "Already Logged In Other Device"
+                    );
+                  }
+                );
               }
-              this.dataService
-                .checkIfUserValid(tempObject.uid)
-                .then((valid: any) => {
-                  if (valid) {
-                    this.sharedService.dismissLC();
-                    this.router.navigate(["/tabs/tab1"]);
-                  } else {
-                    this.sharedService.dismissLC();
-                    this.sharedService.errorToast(
-                      "User account not activated."
-                    );
-                  }
-                });
-
-              this.dataService
-                .checkIfUserValid(tempObject.uid)
-                .then((res: any) => {
-                  if (res) {
-                    this.sharedService.dismissLC();
-                    this.router.navigate(["/tabs/tab1"]);
-                  } else {
-                    this.sharedService.dismissLC();
-                    this.sharedService.errorToast(
-                      "User account not activated."
-                    );
-                  }
-                });
             } else {
               this.dataService.addUserToDatabase(userObject).then(
                 (res: any) => {
                   localStorage.setItem("isCompleted", "false");
                   this.dataService.updateUserCount(1);
-                  this.router.navigate(["/tabs/tab1"], {
-                    queryParams: { data: "first" },
+                  // this.router.navigate(["/tabs/tab1"], {
+                  //   queryParams: { data: "first" },
+                  // });
+                  this.fcm.getToken().then((res: any) => {
+                    this.dataService
+                      .updateToken(tempObject.uid, res)
+                      .then((res: any) => {
+                        localStorage.setItem("Token", "true");
+                        console.log("Device Token Updated");
+                      });
+                  });
+                  this.authService.disconnectFromGoogle().then(() => {});
+                  this.router.navigate(["/profile"], {
+                    queryParams: { uid: tempObject.uid, root: "tabs/tab1" },
                   });
                   this.sharedService.dismissLC();
                 },
@@ -117,8 +150,6 @@ export class LoginPage implements OnInit {
             this.sharedService.dismissLC();
           }
         );
-
-        this.authService.disconnectFromGoogle().then(() => {});
       });
   }
 

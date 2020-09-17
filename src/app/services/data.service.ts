@@ -4,6 +4,7 @@ import { AngularFireStorage } from "@angular/fire/storage";
 
 import * as firebase from "firebase";
 import { AuthService } from "./auth.service";
+import { FCM } from "cordova-plugin-fcm-with-dependecy-updated/ionic/ngx";
 
 @Injectable({
   providedIn: "root",
@@ -13,7 +14,8 @@ export class DataService {
   constructor(
     private angularFireStore: AngularFirestore,
     private angularFireStorage: AngularFireStorage,
-    private authService: AuthService
+    private authService: AuthService,
+    private fcm: FCM
   ) {
     this.getCountDocument().then((querySnapshot) => {
       if (!querySnapshot.empty) {
@@ -25,13 +27,16 @@ export class DataService {
   }
 
   async checkIfUserExists(uid) {
-    return this.angularFireStore.firestore.collection("users").doc(uid).get();
+    return this.angularFireStore.firestore
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .get();
   }
 
   async checkIfUserValid(uid) {
     return this.angularFireStore.firestore
       .collection("users")
-      .doc(uid)
+      .doc(firebase.auth().currentUser.uid)
       .get()
       .then((res: any) => {
         if (res.exists) {
@@ -49,7 +54,10 @@ export class DataService {
   }
 
   async getUserInformation(uid) {
-    return this.angularFireStore.firestore.collection("users").doc(uid).get();
+    return this.angularFireStore.firestore
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .get();
   }
 
   async updateUserCount(count) {
@@ -90,26 +98,30 @@ export class DataService {
     return this.angularFireStore.firestore.collection("doubts").doc(ID).get();
   }
 
-  async getDoubtsByUserID() {
-    let uid = await (await this.authService.currentUserDetail()).providerData[0]
-      .uid;
+  async getDoubtsByUserID(subject) {
     return this.angularFireStore.firestore
       .collection("doubts")
-      .where("uid", "==", uid)
+      .where("uid", "==", firebase.auth().currentUser.uid)
+      .where("subject", "==", subject)
+      .orderBy("createdAt", "desc")
       .get();
   }
 
-  async getAllDoubts() {
+  async getAllDoubts(subject) {
     return this.angularFireStore.firestore
       .collection("doubts")
       .where("class", "==", localStorage.getItem("Class"))
+      .where("subject", "==", subject)
+      .orderBy("createdAt", "desc")
       .get();
   }
 
-  async getAllNotes() {
+  async getAllNotes(subject) {
     return this.angularFireStore.firestore
       .collection("notes")
       .where("class", "==", localStorage.getItem("Class"))
+      .where("subject", "==", subject)
+      .orderBy("createdAt", "desc")
       .get();
   }
 
@@ -117,10 +129,12 @@ export class DataService {
     return this.angularFireStore.firestore.collection("notes").doc(id).get();
   }
 
-  getAssigments() {
+  getAssigments(subject) {
     return this.angularFireStore.firestore
       .collection("assigments")
       .where("class", "==", localStorage.getItem("Class"))
+      .where("subject", "==", subject)
+      .orderBy("createdAt", "desc")
       .get();
   }
 
@@ -130,5 +144,31 @@ export class DataService {
 
   getAnnounements() {
     return this.angularFireStore.firestore.collection("annoucements").get();
+  }
+
+  updateToken(uid, updateValue) {
+    return this.angularFireStore
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .update({
+        token: updateValue,
+      });
+  }
+
+  subscribeToTopic(topic) {
+    return this.fcm.subscribeToTopic(topic);
+  }
+
+  setLoginStatus(uid, status) {
+    return this.angularFireStore
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .update({
+        isLoggedIn: status,
+      });
+  }
+
+  async addLoginLogs(data) {
+    return this.angularFireStore.firestore.collection("logs").add(data);
   }
 }

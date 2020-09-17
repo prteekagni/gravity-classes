@@ -1,5 +1,5 @@
 ion-card-subtitle {
-  font-size: xx-small;
+  font-size: small;
 }
 .card-heading {
   margin-top: 5px;
@@ -16,4 +16,50 @@ ion-item {
 ion-input,
 ion-textarea {
   --padding-start: 10px !important;
+}
+ion-card-subtitle {
+  font-size: small;
+}
+
+.card-heading {
+  margin-top: 5px;
+}
+
+ion-item {
+  --padding-start: 0px;
+}
+.doubt-card ion-card {
+  width: 94vw;
+  left: 2vw;
+}
+.doubt-card:nth-child(3n + 0) ion-card {
+  border: 3px solid #ff0066;
+}
+
+.doubt-card:nth-child(3n + 1) ion-card {
+  border: 3px solid #8a3ffc;
+}
+.doubt-card:nth-child(3n + 2) ion-card {
+  // background: blue;
+  border: 3px solid #f1c21b;
+}
+
+.doubt-card ion-card {
+  animation: popIn 0.3s calc(var(--animation-order) * 80ms) both ease-in;
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(-8px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.skeletonText ion-item {
+  --padding-start: 15px;
 }

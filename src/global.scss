@@ -62,12 +62,12 @@ $animationDelay: 2000ms;
 
 .errorToastStyle {
   --background: var(--ion-color-danger);
-  -webkit-animation-name: slide-top;
-  animation-name: slide-top;
-  -webkit-animation-duration: 500ms;
-  animation-duration: 500ms;
-  -webkit-animation-delay: 2000ms;
-  animation-delay: 2000ms;
+  // -webkit-animation-name: slide-top;
+  // animation-name: slide-top;
+  // -webkit-animation-duration: 500ms;
+  // animation-duration: 500ms;
+  // -webkit-animation-delay: 2000ms;
+  // animation-delay: 2000ms;
   font-size: large;
   font-family: Montserrat;
   --height: 60px;
@@ -130,4 +130,40 @@ ion-item {
 ion-title {
   font-family: Montserrat-Regular;
   font-weight: bold;
+}
+
+@media only screen and (orientation: landscape) {
+  #myVideo {
+    width: 100vw;
+    height: 80vh;
+  }
+}
+
+.bgImage {
+  position: absolute;
+  z-index: 0;
+  filter: brightness(0.5);
+  height: 100vh;
+}
+
+@media only screen and (orientation: landscape) {
+  .bgImage {
+    position: absolute;
+    z-index: 0;
+    filter: brightness(0.5);
+    width: 100vw;
+  }
+}
+
+@media only screen and (min-width: 640px) {
+  .bgImage {
+    position: absolute;
+    z-index: 0;
+    filter: brightness(0.5);
+    width: 100vw;
+  }
+  #myVideo {
+    width: 100vw;
+    height: 80vh;
+  }
 }

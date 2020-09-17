@@ -7,6 +7,7 @@ import {
   AlertController,
   ActionSheetController,
 } from "@ionic/angular";
+import { FCM } from "cordova-plugin-fcm-with-dependecy-updated/ionic/ngx";
 
 @Injectable({
   providedIn: "root",
@@ -19,7 +20,8 @@ export class SharedService {
     private popoverController: PopoverController,
     private modalController: ModalController,
     private alertController: AlertController,
-    private actionSheetController: ActionSheetController
+    private actionSheetController: ActionSheetController,
+    private fcm: FCM
   ) {}
   async showToast(message) {
     const toast = await this.toastController.create({
@@ -97,5 +99,9 @@ export class SharedService {
         return true;
       }
     } catch (err) {}
+  }
+
+  subscribeToTopic(topic) {
+    return this.fcm.subscribeToTopic(topic);
   }
 }

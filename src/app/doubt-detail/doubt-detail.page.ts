@@ -47,7 +47,7 @@ export class DoubtDetailPage implements OnInit {
       async () => {
         this.sharedService.removeTopElements().then((res) => {
           if (!res) {
-            this.router.navigate(["tabs/tab1"]);
+            this.router.navigate(["tabs/doubts"]);
           }
         });
       }

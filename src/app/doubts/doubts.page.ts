@@ -1,14 +1,12 @@
-import { Component, OnInit } from "@angular/core";
-import { ActionSheetController, Platform } from "@ionic/angular";
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { Platform, ModalController, IonRadioGroup } from "@ionic/angular";
 import { DataService } from "../services/data.service";
 import { AuthService } from "../services/auth.service";
-import { finalize } from "rxjs/operators";
-import * as firebase from "firebase";
-import { ImagePicker } from "@ionic-native/image-picker/ngx";
-import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { SharedService } from "../services/shared.service";
 import { Router } from "@angular/router";
 import { NgForm } from "@angular/forms";
+import { GenericModalPage } from "../generic-modal/generic-modal.page";
+import { ScrollHideConfig } from "../directive/vanishing-header.directive";
 
 declare var plugins;
 
@@ -24,338 +22,76 @@ export class DoubtsPage implements OnInit {
   hasImage: boolean = false;
   imageRefrence;
   doubt;
-  doubtfrom;
+  doubtfrom: boolean = false;
   doubtform: NgForm;
   user;
   imgBlob;
   isProfileCompleted;
   unsubscribeBackEvent;
+  subjects: any = [];
+  subject = "";
+  isloaded: boolean = true;
+  @ViewChild("radioGroup") radioGroup: IonRadioGroup;
+
+  headerScrollConfig: ScrollHideConfig = {
+    cssProperty: "margin-top",
+    maxValue: 168,
+  };
+
   constructor(
     private authService: AuthService,
-    private actionSheetController: ActionSheetController,
     private dataService: DataService,
-    private imagePicker: ImagePicker,
-    private camera: Camera,
     private sharedService: SharedService,
     private router: Router,
-    private platform: Platform
+    private platform: Platform,
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
-    this.isProfileCompleted =
-      localStorage.getItem("isCompleted") == "true" ? true : false;
-    if (this.isProfileCompleted) {
-      this.getDoubts();
-    }
-  }
-
-  getDoubts() {
-    this.sharedService.displayLC();
-    this.dataService.getDoubtsByUserID().then((querySnapshot) => {
-      this.doubts = [];
-      if (!querySnapshot.empty) {
-        let i: any = {};
-        querySnapshot.forEach((element) => {
-          i = element.data();
-          i.id = element.id;
-          this.doubts.push(i);
-        });
-        this.sharedService.dismissLC();
-      }
-    });
-  }
-
-  sendDoubt() {}
-
-  addFiles() {}
-
-  submitButton() {}
-
-  async uploadPhoto() {
-    const actionSheet = await this.actionSheetController.create({
-      header: "Select Image",
-      buttons: [
-        {
-          text: "Gallery",
-          icon: "images-outline",
-          cssClass: "actionSheetColorIcon",
-          handler: () => {
-            this.openGallery();
-          },
+    this.authService.currentUserDetail().then((res: any) => {
+      this.dataService.getUserInformation(res.providerData[0].uid).then(
+        (res) => {
+          this.user = res.data();
+          this.subjects = res.data().subjects;
+          this.radioGroup.value = this.subjects[0];
+          this.subject = this.radioGroup.value;
+          this.getAllDoubts();
         },
-        {
-          text: "Cancel",
-          icon: "close",
-          role: "cancel",
-          cssClass: "actionSheetCloseColorIcon",
-          handler: () => {
-            console.log("Cancel clicked");
-          },
-        },
-        {
-          text: "Camera",
-          icon: "camera",
-          cssClass: "actionSheetColorIcon",
-
-          handler: () => {
-            this.openCamera();
-          },
-        },
-      ],
-    });
-    await actionSheet.present();
-  }
-
-  openCamera() {
-    const options: CameraOptions = {
-      quality: 100,
-      destinationType: this.camera.DestinationType.FILE_URI,
-      encodingType: this.camera.EncodingType.PNG,
-      mediaType: this.camera.MediaType.PICTURE,
-      saveToPhotoAlbum: true,
-      sourceType: this.camera.PictureSourceType.CAMERA,
-    };
-
-    this.camera.getPicture(options).then((imageData) => {
-      plugins.crop
-        .promise(imageData, {
-          quality: 100,
-          targetWidth: 1080,
-          targetHeight: 1080,
-          heightRatio: 1,
-          widthRatio: 1,
-        })
-        .then(
-          (newImage) => {
-            console.log("new image path is: " + newImage);
-            this.imageUrl = (<any>window).Ionic.WebView.convertFileSrc(
-              newImage
-            );
-            console.log(plugins.crop);
-            this.hasImage = true;
-            this.readFile(newImage);
-          },
-          (error) => console.error("Error cropping image", error)
-        );
-    });
-  }
-
-  openGallery() {
-    // this.imagePicker
-    //   .getPictures({
-    //     maximumImagesCount: 1,
-    //     quality: 100,
-    //     outputType: 0,
-    //     width: 1080,
-    //     height: 1080,
-    //   })
-    //   .then((results) => {
-    //     for (var i = 0; i < results.length; i++) {
-    //       this.tempImageUrl = results[i];
-    //     }
-    //     plugins.crop
-    //       .promise(this.tempImageUrl, {
-    //         quality: 100,
-    //         targetWidth: 1080,
-    //         heightRatio: 1,
-    //         widthRatio: 1,
-    //       })
-    //       .then(
-    //         (newImage) => {
-    //           this.imageUrl = (<any>window).Ionic.WebView.convertFileSrc(
-    //             newImage
-    //           );
-    //           this.readFile(newImage);
-    //           this.hasImage = true;
-    //         },
-    //         (error) => console.error("Error cropping image", error)
-    //       );
-    //   });
-    // (err) => {
-    //   console.log(err);
-    // };
-
-    const options: CameraOptions = {
-      quality: 100,
-      destinationType: this.camera.DestinationType.FILE_URI,
-      encodingType: this.camera.EncodingType.PNG,
-      mediaType: this.camera.MediaType.PICTURE,
-      saveToPhotoAlbum: true,
-      sourceType: this.camera.PictureSourceType.SAVEDPHOTOALBUM,
-    };
-
-    this.camera.getPicture(options).then((imageData) => {
-      plugins.crop
-        .promise(imageData, {
-          quality: 100,
-          targetWidth: 1080,
-          targetHeight: 1080,
-          heightRatio: 1,
-          widthRatio: 1,
-        })
-        .then(
-          (newImage) => {
-            console.log("new image path is: " + newImage);
-            this.imageUrl = (<any>window).Ionic.WebView.convertFileSrc(
-              newImage
-            );
-            console.log(plugins.crop);
-            this.hasImage = true;
-            this.readFile(newImage);
-          },
-          (error) => console.error("Error cropping image", error)
-        );
-    });
-  }
-  async readFile(file: any) {
-    (<any>window).resolveLocalFileSystemURL(file, (res) => {
-      res.file((resFile) => {
-        var reader = new FileReader();
-        reader.readAsArrayBuffer(resFile);
-        reader.onloadend = (evt: any) => {
-          this.imgBlob = new Blob([evt.target.result], { type: "image/jpeg" });
-        };
-      });
-    });
-  }
-  async submitDoubts(doubt) {
-    this.sharedService.displayLC();
-    let user = await this.authService.currentUserDetail();
-
-    if (this.hasImage) {
-      console.log(doubt);
-      this.dataService
-        .getUserInformation(user.providerData[0].uid)
-        .then((res: any) => {
-          let fileExtension = "png";
-          let time = new Date().getMilliseconds();
-          let pathName = user.uid + user + time;
-          pathName = pathName.replace(/\s/g, "");
-          this.imageRefrence = this.dataService.setRefrence(
-            pathName + "." + fileExtension
-          );
-          const task = this.dataService.uploadImage(
-            pathName + "." + fileExtension,
-            this.imgBlob
-          );
-          task
-            .snapshotChanges()
-            .pipe(
-              finalize(async () => {
-                let downloadURL = await this.imageRefrence
-                  .getDownloadURL()
-                  .toPromise();
-                this.doubt = {
-                  image: downloadURL,
-                  uid: user.providerData[0].uid,
-                  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                  updatedAt: "",
-                  displayName: user.providerData[0].displayName,
-                  status: 0,
-                  description: doubt.description,
-                  solution: "",
-                };
-                this.dataService.submitDoubt(this.doubt).then(
-                  (res: any) => {
-                    console.log(res);
-                    this.sharedService.showToast("Doubt Submitted").then(() => {
-                      this.hasImage = false;
-                      this.doubt = "";
-                      this.doubtform.reset();
-
-                      this.sharedService.dismissLC();
-                      this.getDoubts();
-                    });
-                  },
-                  (err) => {
-                    this.sharedService.errorToast("Error Submitted");
-                    this.sharedService.dismissLC();
-                  }
-                );
-              })
-            )
-            .subscribe((res: any) => {
-              console.log(res);
-            });
-        });
-    } else {
-      this.doubt = {
-        image: "",
-        uid: user.providerData[0].uid,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        updatedAt: "",
-        displayName: user.providerData[0].displayName,
-        status: 0,
-        description: doubt.description,
-        solution: "",
-      };
-      this.dataService.submitDoubt(this.doubt).then(
-        (res: any) => {
-          console.log(res);
-          this.sharedService.showToast("Doubt Submitted").then(() => {
-            this.hasImage = false;
-            this.doubt = "";
-            this.sharedService.dismissLC();
-            this.doubtform.reset();
-            this.getDoubts();
-          });
-        },
-        (err) => {
-          this.sharedService.errorToast("Error Submitted");
-          this.sharedService.dismissLC();
-        }
+        (err) => {}
       );
-    }
+    });
   }
 
   doubtDetail(data) {
     this.router.navigate(["/doubt-detail", data.id]);
   }
 
-  doubtToggleChanged(event) {
-    console.log(event);
-    console.log(this.doubtfrom);
-    if (this.doubtfrom == true) {
-      this.doubts = [];
-      this.dataService.getAllDoubts().then((querySnapshot: any) => {
+  getAllDoubts() {
+    this.doubts = [];
+    this.sharedService.displayLC();
+    this.dataService.getAllDoubts(this.subject).then(
+      (querySnapshot: any) => {
         if (!querySnapshot.empty) {
           let i: any = {};
           querySnapshot.forEach((element) => {
             i = element.data();
             i.id = element.id;
+            if (i.uid == this.user.uid) {
+              i.userDoubt = true;
+            }
             this.doubts.push(i);
           });
+          this.sharedService.dismissLC();
+        } else {
+          this.sharedService.errorToast("No doubt to show.");
+          this.sharedService.dismissLC();
         }
-      });
-    } else {
-      this.doubts = [];
-
-      this.dataService.getDoubtsByUserID().then((querySnapshot) => {
-        if (!querySnapshot.empty) {
-          let i: any = {};
-          querySnapshot.forEach((element) => {
-            i = element.data();
-            i.id = element.id;
-            this.doubts.push(i);
-          });
-        }
-      });
-    }
-  }
-
-  completeProfile() {
-    this.authService.getUserInformation().then((user) => {
-      this.authService
-        .getUserDetail(user.providerData[0].uid)
-        .then((res: any) => {
-          if (res.exists) {
-            this.user = res.data();
-            this.router.navigate(["/profile"], {
-              queryParams: { uid: this.user.uid, root: "tabs/doubts" },
-            });
-          }
-        });
-    });
+      },
+      (err) => {
+        this.sharedService.dismissLC();
+        console.log(err);
+      }
+    );
   }
 
   initializeBackButtonCustomHandler(): void {
@@ -370,12 +106,104 @@ export class DoubtsPage implements OnInit {
       }
     );
   }
+
   ionViewWillLeave() {
-    // clearInterval(this.categoryTimeOut);
+    this.sharedService.dismissLC();
     this.unsubscribeBackEvent.unsubscribe();
   }
 
   ionViewWillEnter() {
     this.initializeBackButtonCustomHandler();
   }
+
+  selectedSubject(event) {
+    console.log(event);
+    this.subject = event;
+    this.getAllDoubts();
+  }
+
+  async openDoubtModal() {
+    const modal = await this.modalController.create({
+      component: GenericModalPage,
+      backdropDismiss: true,
+      cssClass: "generic-modal",
+      componentProps: { type: "doubt" },
+    });
+    modal.onDidDismiss().then((data: any) => {
+      console.log(data);
+      if (data.data == true) {
+        this.getAllDoubts();
+      }
+    });
+    modal.present();
+  }
 }
+
+// this.authService.currentUserDetail().then((res: any) => {
+//   this.dataService
+//     .getUserInformation(res.providerData[0].uid)
+//     .then((res) => {
+//       this.subjects = res.data().subjects;
+//       this.radioGroup.value = this.subjects[0];
+//       this.subject = this.radioGroup.value;
+//       this.dataService
+//         .getDoubtsByUserID(this.subject)
+//         .then((querySnapshot) => {
+//           if (!querySnapshot.empty) {
+//             let i: any = {};
+//             querySnapshot.forEach((element) => {
+//               i = element.data();
+//               i.id = element.id;
+//               this.doubts.push(i);
+//             });
+//           }
+//         });
+//     });
+// });
+
+// doubtToggleChanged(event) {
+//   if (this.subject == "") {
+//     this.sharedService.showToast("Select Subject First");
+//   } else {
+//     if (this.doubtfrom == true) {
+//       this.doubts = [];
+//       this.getAllDoubts();
+//     } else {
+//       this.doubts = [];
+//       this.dataService
+//         .getDoubtsByUserID(this.subject)
+//         .then((querySnapshot) => {
+//           if (!querySnapshot.empty) {
+//             let i: any = {};
+//             querySnapshot.forEach((element) => {
+//               i = element.data();
+//               i.id = element.id;
+//               this.doubts.push(i);
+//             });
+//           }
+//         });
+//     }
+//   }
+// }
+// this.getDoubts();
+// this.authService.currentUserDetail().then((res: any) => {
+//   this.dataService
+//     .getUserInformation(res.providerData[0].uid)
+//     .then((res) => {
+//       this.subjects = res.data().subjects;
+//       this.radioGroup.value = this.subjects[0];
+//       this.subject = this.radioGroup.value;
+//       this.dataService
+//         .getDoubtsByUserID(this.subject)
+//         .then((querySnapshot) => {
+//           if (!querySnapshot.empty) {
+//             let i: any = {};
+//             querySnapshot.forEach((element) => {
+//               i = element.data();
+//               i.id = element.id;
+//               this.doubts.push(i);
+//             });
+//           }
+//         });
+//     });
+// });

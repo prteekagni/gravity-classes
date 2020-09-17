@@ -13,7 +13,6 @@ import { environment } from "src/environments/environment";
 import { AngularFireModule } from "@angular/fire";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { AngularFireAuthModule } from "@angular/fire/auth";
-
 import { AngularFireStorageModule } from "@angular/fire/storage";
 
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -24,25 +23,21 @@ import { ImagePicker } from "@ionic-native/image-picker/ngx";
 
 import { Camera } from "@ionic-native/camera/ngx";
 
-import { StreamingMedia } from "@ionic-native/streaming-media/ngx";
-
 import { AppMinimize } from "@ionic-native/app-minimize/ngx";
-
-import { DocumentViewer } from "@ionic-native/document-viewer/ngx";
 
 import { File } from "@ionic-native/file/ngx";
 
 import { FileTransfer } from "@ionic-native/file-transfer/ngx";
 
-import { PreviewAnyFile } from "@ionic-native/preview-any-file/ngx";
-import { FileOpener } from "@ionic-native/file-opener/ngx";
-
 import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
 
-import { FullScreenImage } from "@ionic-native/full-screen-image/ngx";
-import { VideoPlayer } from "@ionic-native/video-player/ngx";
+import { FCM } from "cordova-plugin-fcm-with-dependecy-updated/ionic/ngx";
+import { AuthGuard } from "./services/can-activate-route.guard";
 
-import { BackgroundMode } from "@ionic-native/background-mode/ngx";
+import { ScreenOrientation } from "@ionic-native/screen-orientation/ngx";
+
+import { SocialSharing } from "@ionic-native/social-sharing/ngx";
+import { FileEncryption } from "@ionic-native/file-encryption/ngx";
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -57,7 +52,7 @@ import { BackgroundMode } from "@ionic-native/background-mode/ngx";
     FormsModule,
     ReactiveFormsModule,
     IonicModule.forRoot({
-      rippleEffect: false,
+      rippleEffect: true,
       mode: "md",
     }),
   ],
@@ -65,19 +60,18 @@ import { BackgroundMode } from "@ionic-native/background-mode/ngx";
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: AuthGuard },
     GooglePlus,
     ImagePicker,
     Camera,
-    StreamingMedia,
     AppMinimize,
-    DocumentViewer,
     FileTransfer,
     File,
-    PreviewAnyFile,
-    FileOpener,
     InAppBrowser,
-    VideoPlayer,
-    BackgroundMode,
+    FCM,
+    ScreenOrientation,
+    SocialSharing,
+    FileEncryption,
   ],
   bootstrap: [AppComponent],
 })

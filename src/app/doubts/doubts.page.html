@@ -1,65 +1,36 @@
-<ion-header>
+<ion-header [scrollHide]="headerScrollConfig" [scrollContent]="pageContent">
   <ion-toolbar color="primary">
-    <ion-title>Doubts</ion-title>
+    <ion-title>Ask your doubts ?</ion-title>
+  </ion-toolbar>
+  <ion-toolbar color="primary">
+    <ion-list>
+      <ion-radio-group #radioGroup>
+        <ion-item *ngFor="let item of subjects " style="--padding-start: 16px;">
+          <ion-label>{{item |titlecase}}</ion-label>
+          <ion-radio slot="start" value="{{item}}" (ionFocus)="selectedSubject(item)" name="{{item}}"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content #pageContent>
+  <ng-container *ngIf="isloaded; else elseTemplate">
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" (click)="openDoubtModal()">
+      <ion-fab-button>
+        <ion-icon name="help-circle"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
 
-  <ng-container *ngIf="isProfileCompleted; else elseTemplate">
-    <ion-row>
-      <ion-col size="12">
-        <ion-card class="ion-text-center">
-          <ion-card-header>
-            <ion-card-title>Ask Doubts</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <form (ngSubmit)="submitDoubts(doubtform.value)" #doubtform="ngForm">
-              <ion-item style="border-radius: 15px;">
-                <ion-input type="text" placeholder="Add Title"> </ion-input>
-              </ion-item>
-              <ion-item style="
-               
-                border-radius: 15px;
-               
-                margin-top: 5px;
-              ">
-                <!-- <ion-input type="textarea" rows="6" cols="20" placeholder="Add Doubt" autoGrow="true" wrap="soft">
-              </ion-input> -->
-                <ion-textarea rows="4" cols="20" placeholder="Enter any notes here..." (ngModel)="doubt.description"
-                  name="description"></ion-textarea>
-              </ion-item>
-              <ion-item *ngIf="hasImage">
-                <img [src]="this.imageUrl" alt="" />
-              </ion-item>
-              <ion-item lines="none" class="ion-text-right">
-                <!-- <ion-icon name="attach-outline"></ion-icon> -->
-                <ion-button (click)="uploadPhoto()" fill="clear" shape="round" slot="end">
-                  Add File
-                </ion-button>
-              </ion-item>
-              <ion-button type="submit" expand="block" fill="solid" shape="" color="primary">
-                Submit
-              </ion-button>
-            </form>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
     <ion-row>
       <ion-col size="12" class="ion-text-center">
-        <h1 style="color:var(--ion-color-danger)">Doubts</h1>
-        <ion-item>
-          <ion-label style="position: absolute; right: 60px;">Show All</ion-label>
-          <ion-toggle [(ngModel)]="doubtfrom" style="position: absolute; right: 0px;"
-            (ionChange)="doubtToggleChanged($event)"></ion-toggle>
-        </ion-item>
-
         <ion-list>
           <ion-item *ngFor="let item of doubts" class="doubt-card">
-            <ion-card style="width: 96%;" (click)="doubtDetail(item)">
+            <ion-card style="width: 96%;" (click)="doubtDetail(item)" class="doubt-card">
               <ion-card-header>
-                <ion-card-subtitle> </ion-card-subtitle>
+                <ion-card-subtitle>{{item.subject |titlecase}} {{item.class}}<sup>th</sup>
+                  <span *ngIf="item.userDoubt == true" style="font-weight: bold; color: black;">(Your Doubt)</span>
+                </ion-card-subtitle>
                 <ion-card-title>
                   <p style="margin-bottom: 0px;" class="card-heading">
                     {{item.title}}
@@ -69,8 +40,9 @@
               </ion-card-header>
               <ion-card-content>
                 <div style="display: flex; flex-direction: row;">
-                  <p class="card-description">
-                    {{item?.description}}
+                  <p class="card-description" style="font-size: large;
+    text-overflow: ellipsis;">
+                    Question: {{item?.description}}
                   </p>
                 </div>
               </ion-card-content>
@@ -81,19 +53,153 @@
     </ion-row>
   </ng-container>
   <ng-template #elseTemplate>
+    <ion-list class="skeletonText">
 
-    <div style="    display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;">
-      <h1>Profile not completed</h1>
-      <ion-button (click)="completeProfile()" shape="round">
-        Complete Profile
-      </ion-button>
-    </div>
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label>
+          <h3>
+            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+          </h3>
+          <p>
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </p>
+          <p>
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label>
+          <h3>
+            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+          </h3>
+          <p>
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </p>
+          <p>
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label>
+          <h3>
+            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+          </h3>
+          <p>
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </p>
+          <p>
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label>
+          <h3>
+            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+          </h3>
+          <p>
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </p>
+          <p>
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label>
+          <h3>
+            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+          </h3>
+          <p>
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </p>
+          <p>
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label>
+          <h3>
+            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+          </h3>
+          <p>
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </p>
+          <p>
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label>
+          <h3>
+            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+          </h3>
+          <p>
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </p>
+          <p>
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label>
+          <h3>
+            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+          </h3>
+          <p>
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </p>
+          <p>
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label>
+          <h3>
+            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+          </h3>
+          <p>
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </p>
+          <p>
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </p>
+        </ion-label>
+      </ion-item>
 
+    </ion-list>
   </ng-template>
 </ion-content>

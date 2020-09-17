@@ -16,6 +16,10 @@ export class ProfilePage implements OnInit {
   isloaded: boolean = false;
   rootNav: string;
   unsubscribeBackEvent;
+  physics = false;
+  maths = false;
+  subjects: any = [];
+  subjectChanged;
   constructor(
     private dataService: DataService,
     private authService: AuthService,
@@ -30,6 +34,18 @@ export class ProfilePage implements OnInit {
         if (res.exists) {
           this.user = res.data();
           this.isloaded = true;
+          console.log(this.user);
+          if (this.user.subjects.length > 0) {
+            this.user.subjects.forEach((element) => {
+              this.subjects.push(element);
+              console.log(this.subjects);
+              if (element == "physics") {
+                this.physics = true;
+              } else if (element == "mathematics") {
+                this.maths = true;
+              }
+            });
+          }
         }
       });
     });
@@ -40,17 +56,25 @@ export class ProfilePage implements OnInit {
   onSubmit(loginForm) {
     console.log(loginForm);
 
-    if (loginForm.dirty) {
+    if (loginForm.dirty || this.subjectChanged) {
       let data = loginForm.value;
       data.isProfileCompleted = true;
       localStorage.setItem("isCompleted", "true");
       localStorage.setItem("Class", data.class);
+      this.sharedService.subscribeToTopic(data.class);
+      this.dataService.subscribeToTopic(data.class);
       data.uid = this.user.uid;
+      data.subjects = this.subjects;
+      this.subjects.forEach((element) => {
+        console.log(element);
+        this.sharedService.subscribeToTopic(element + data.class);
+      });
       this.sharedService.displayLC();
       this.dataService.updateUserProfile(data).then(
         () => {
           this.sharedService.dismissLC();
           this.sharedService.showToast("Profile Updated");
+          this.subjects = [];
           this.router.navigate(["tabs/tab3"]);
         },
         (err) => {
@@ -74,11 +98,25 @@ export class ProfilePage implements OnInit {
     );
   }
   ionViewWillLeave() {
+    this.subjects = [];
+
     // clearInterval(this.categoryTimeOut);
     this.unsubscribeBackEvent.unsubscribe();
   }
 
   ionViewWillEnter() {
     this.initializeBackButtonCustomHandler();
+  }
+
+  checkboxChanged(event) {
+    if (event.detail.checked) {
+      this.subjects.push(event.detail.value);
+    } else {
+      var index = this.subjects.indexOf(event.detail.value);
+      if (index > -1) {
+        this.subjects.splice(index, 1);
+      }
+      this.subjectChanged = true;
+    }
   }
 }

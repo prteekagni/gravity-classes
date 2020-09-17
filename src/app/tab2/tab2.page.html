@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" [scrollHide]="headerScrollConfig" [scrollContent]="pageContent">
   <ion-toolbar color="primary">
     <ion-title>
       Class
@@ -14,94 +14,93 @@
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
+  <ion-toolbar color="primary">
+    <ion-list>
+      <ion-radio-group #radioGroup>
+        <ion-item *ngFor="let item of subjects " style="--padding-start: 16px;">
+          <ion-label>{{item |titlecase}}</ion-label>
+          <ion-radio slot="start" value="{{item}}" (ionFocus)="selectedSubject(item)" name="{{item}}"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" #pageContent>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <!-- <ng-container *ngIf="subject !== ''; else elseTemplate"> -->
   <ng-container *ngIf="isloaded; else elseLoadingTemplate">
-    <ng-container *ngIf="isProfileCompleted; else elseTemplate">
-      <ion-slides #slides (ionSlideDidChange)="onSlideDidChange($event)">
-        <ion-slide>
-          <ion-row *ngIf="index == 0">
-            <ion-col size="12">
-              <ion-list>
-                <ion-item *ngFor="let item of notes" [routerLink]="['/notification' , item.id]"
-                  [queryParams]="{type: 'notes'}" class="note-card">
-                  <ion-card>
-                    <ion-card-header>
-                      <ion-card-subtitle>Physics({{item.class}})
-                      </ion-card-subtitle>
-                      <ion-card-title>
-                        <p class="card-heading">
-                          {{item.title}}
-                        </p>
-                        <p class="date" style="font-size: small;">
-                          {{item.createdAt.toDate() | date}}
-                        </p>
-                      </ion-card-title>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <div style="display: flex; flex-direction: row;">
-                        <p class="card-description">
-                          {{item.description}}
-                        </p>
-                      </div>
-                    </ion-card-content>
-                  </ion-card>
-                </ion-item>
-              </ion-list>
-            </ion-col>
-          </ion-row>
-        </ion-slide>
-        <ion-slide>
-          <ion-row>
-            <ion-col size="12">
-              <ion-list>
-                <ion-item *ngFor="let item of assigments; index as i" class="note-card"
-                  style="--animation-order: {{ i % 10 }}">
-                  <ion-card (click)="openAssignment(item)">
-                    <ion-card-header>
-                      <ion-card-subtitle>Physics(Class XI) </ion-card-subtitle>
-                      <ion-card-title>
-                        <p class="card-heading">
-                          Refraction and Reflection
-                        </p>
-                        <p class="date">
-                          Date 26/06/2020
-                        </p>
-                      </ion-card-title>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <div style="display: flex; flex-direction: row;">
-                        <p class="card-description">
-                          Lorem ipsum, dolor sit amet consectetur adipisicing
-                          elit. Dolorem, rerum.
-                        </p>
-                      </div>
-                    </ion-card-content>
-                  </ion-card>
-                </ion-item>
-              </ion-list>
-            </ion-col>
-          </ion-row>
-        </ion-slide>
-      </ion-slides>
-    </ng-container>
-    <ng-template #elseTemplate>
-      <div style="
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          height: 100%;
-        ">
-        <h1>Profile not completed</h1>
-        <ion-button (click)="completeProfile()" shape="round">
-          Complete Profile
-        </ion-button>
-      </div>
-    </ng-template>
+
+    <ion-slides #slides (ionSlideDidChange)="onSlideDidChange($event)">
+      <ion-slide>
+        <ion-row *ngIf="index == 0">
+          <ion-col size="12">
+            <ion-list>
+              <ion-item *ngFor="let item of notes" [routerLink]="['/notification' , item.id]"
+                [queryParams]="{type: 'notes'}" class="note-card">
+                <ion-card>
+                  <ion-card-header>
+                    <ion-card-subtitle>{{item.subject| titlecase}} ({{item.class}}<sup>th</sup>)
+                    </ion-card-subtitle>
+                    <ion-card-title>
+                      <p class="card-heading">
+                        {{item.title}}
+                      </p>
+                      <p class="date" style="font-size: small;">
+                        {{item.createdAt.toDate() | date}}
+                      </p>
+                    </ion-card-title>
+                  </ion-card-header>
+                  <ion-card-content>
+                    <div style="display: flex; flex-direction: row;">
+                      <p class="card-description">
+                        {{item.description}}
+                      </p>
+                    </div>
+                  </ion-card-content>
+                </ion-card>
+              </ion-item>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </ion-slide>
+      <ion-slide>
+        <ion-row>
+          <ion-col size="12">
+            <ion-list>
+              <ion-item *ngFor="let item of assigments; index as i" class="note-card"
+                style="--animation-order: {{ i % 10 }}">
+                <ion-card (click)="openAssignment(item)">
+                  <ion-card-header>
+                    <ion-card-subtitle>{{item.subject| titlecase}} ({{item.class}}<sup>th</sup>)
+
+                    </ion-card-subtitle>
+                    <ion-card-title>
+                      <p class="card-heading">
+                        {{item.title}} <span *ngIf="item.active == true">(Active)</span>
+                        <span *ngIf="item.active !== true">(Expired)</span>
+                      </p>
+                      <p class="date" style="font-size: small;">
+                        {{item.createdAt.toDate() | date}}
+                      </p>
+                    </ion-card-title>
+                  </ion-card-header>
+                  <ion-card-content>
+                    <div style="display: flex; flex-direction: row;">
+                      <p class="card-description">
+                        {{item.description}}
+                      </p>
+                    </div>
+                  </ion-card-content>
+                </ion-card>
+              </ion-item>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </ion-slide>
+    </ion-slides>
   </ng-container>
   <ng-template #elseLoadingTemplate>
     <ion-list class="skeletonText">
@@ -253,4 +252,19 @@
 
     </ion-list>
   </ng-template>
+  <!-- </ng-container> -->
+  <!-- <ng-template #elseTemplate>
+    <div style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+          ">
+      <h1>Select the subject</h1>
+    </div>
+  </ng-template> -->
+
 </ion-content>
