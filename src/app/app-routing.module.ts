@@ -55,6 +55,10 @@ const routes: Routes = [
     path: 'generic-modal',
     loadChildren: () => import('./generic-modal/generic-modal.module').then( m => m.GenericModalPageModule)
   },
+  {
+    path: 'quiz',
+    loadChildren: () => import('./quiz/quiz.module').then( m => m.QuizPageModule)
+  },
 ];
 @NgModule({
   imports: [

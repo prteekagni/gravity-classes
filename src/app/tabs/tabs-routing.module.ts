@@ -31,6 +31,12 @@ const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
+        path: "quiz",
+        loadChildren: () =>
+          import("../quiz/quiz.module").then((m) => m.QuizPageModule),
+        canActivate: [AuthGuard],
+      },
+      {
         path: "",
         redirectTo: "/tabs/tab1",
         pathMatch: "full",

@@ -73,6 +73,7 @@
     "cordova-android": "^9.0.0",
     "cordova-ourcodeworld-preventscreenshots": "git+https://github.com/sdkcarlos/cordova-ourcodeworld-preventscreenshots.git",
     "cordova-plugin-device": "^2.0.2",
+    "cordova-plugin-ionic": "^5.4.7",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
     "cordova-plugin-ionic-webview": "^4.2.1",
     "cordova-plugin-privacyscreen": "^0.4.0",
@@ -134,7 +135,15 @@
       "cordova-plugin-crop": {},
       "cordova-plugin-x-socialsharing": {},
       "cordova-plugin-privacyscreen": {},
-      "cordova-safe": {}
+      "cordova-safe": {},
+      "cordova-plugin-ionic": {
+        "APP_ID": "8ba92c04",
+        "CHANNEL_NAME": "updates",
+        "UPDATE_METHOD": "auto",
+        "MAX_STORE": "2",
+        "MIN_BACKGROUND_DURATION": "30",
+        "UPDATE_API": "https://api.ionicjs.com"
+      }
     },
     "platforms": [
       "android"

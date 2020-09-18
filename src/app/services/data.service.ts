@@ -171,4 +171,25 @@ export class DataService {
   async addLoginLogs(data) {
     return this.angularFireStore.firestore.collection("logs").add(data);
   }
+
+  addDataToMap(data) {
+    return this.angularFireStore.firestore
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .update({ scores: {} });
+  }
+
+  getUserScores() {
+    return this.angularFireStore.firestore
+      .collection("usersQuiz")
+      .where("uid", "==", firebase.auth().currentUser.uid)
+      .get();
+  }
+
+  getQuizzes() {
+    return this.angularFireStore.firestore
+      .collection("quiz")
+      .where("class", "==", localStorage.getItem("Class"))
+      .get();
+  }
 }

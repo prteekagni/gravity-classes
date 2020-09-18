@@ -1,0 +1,46 @@
+ion-card-subtitle {
+  font-size: small;
+}
+
+.card-heading {
+  margin-top: 5px;
+}
+
+ion-item {
+  --padding-start: 0px;
+}
+// .note-card {
+//   width: 94vw;
+//   left: 2vw;
+// }
+.note-card:nth-child(3n + 0) {
+  border: 3px solid #ff0066;
+}
+
+.note-card:nth-child(3n + 1) {
+  border: 3px solid #8a3ffc;
+}
+.note-card:nth-child(3n + 2) {
+  // background: blue;
+  border: 3px solid #f1c21b;
+}
+
+.note-card {
+  animation: popIn 0.3s calc(var(--animation-order) * 80ms) both ease-in;
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(-8px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.skeletonText ion-item {
+  --padding-start: 15px;
+}

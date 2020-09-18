@@ -2,15 +2,17 @@
   <ion-toolbar color="primary">
     <ion-title>Submit {{type | titlecase}}</ion-title>
     <ion-buttons slot="end">
-      <ion-button style="color: white;" (click)="dismiss()">
+      <ion-button style="color: white" (click)="dismiss()">
         <ion-icon slot="icon-only" name="close"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-
 </ion-header>
 
 <ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ng-container *ngIf="type == 'doubt'">
     <ion-row>
       <ion-col size="12">
@@ -20,19 +22,10 @@
           </ion-card-header>
           <ion-card-content>
             <form (ngSubmit)="submitDoubts(doubtform)" #doubtform="ngForm">
-              <ion-item style="border-radius: 15px;">
+              <ion-item style="border-radius: 15px">
                 <ion-input type="text" placeholder="Topic" name="title" (ngModel)="doubt.title">
                 </ion-input>
               </ion-item>
-              <!-- <ion-item>
-                <ion-label position="floating">Class <ion-text color="danger">*</ion-text>
-                </ion-label>
-                <ion-select value="9" okText="Okay" cancelText="Dismiss" (ngModel)="doubt.class" name="class">
-                  <ion-select-option value="{{user.class}}">Class {{user?.class | titlecase}}
-                  </ion-select-option>
-
-                </ion-select>
-              </ion-item> -->
               <ion-item>
                 <ion-label position="floating">Subject <ion-text color="danger">*</ion-text>
                 </ion-label>
@@ -41,19 +34,18 @@
                   </ion-select-option>
                 </ion-select>
               </ion-item>
-              <ion-item style="
-                  border-radius: 15px;
-                  margin-top: 5px;
-                ">
+              <ion-item style="border-radius: 15px; margin-top: 5px">
                 <ion-textarea rows="4" cols="20" placeholder="Enter your question" (ngModel)="doubt.description"
                   name="description"></ion-textarea>
               </ion-item>
               <ion-item [hidden]="!hasImage">
-                <img [src]="this.imageUrl" alt="" style="    max-height: 300px;
-    max-width: 200px;
-    position: relative;
-    left: 50%;
-    transform: translate(-50%);" #doubtImage />
+                <img [src]="this.imageUrl" alt="" style="
+                    max-height: 300px;
+                    max-width: 200px;
+                    position: relative;
+                    left: 50%;
+                    transform: translate(-50%);
+                  " #doubtImage />
                 <ion-spinner *ngIf="spinner"></ion-spinner>
               </ion-item>
               <!-- <ion-item *ngIf="!hasImage">
@@ -73,5 +65,28 @@
       </ion-col>
     </ion-row>
   </ng-container>
-  <ng-container *ngIf="type"> </ng-container>
+  <ng-container *ngIf="type == 'scores'">
+    <ion-card *ngFor="let item of scores">
+      <ion-card-header>
+        <ion-card-subtitle>{{item.subject| titlecase}} ({{item.class}}<sup>th</sup>)
+        </ion-card-subtitle>
+        <ion-card-title>
+          <p class="card-heading">{{item.title}}</p>
+          <p class="date" style="font-size: small">
+            {{item.createdAt.toDate() | date}}
+          </p>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div style="display: flex; flex-direction: column">
+          <p class="card-description" style="font-size: large; color: black; font-weight: bold">
+            Marks : {{item.marks}}/{{item.totalMarks}}
+          </p>
+          <p style="font-size: large; color: black; font-weight: bold">
+            Suggestion: {{item?.suggestion}}
+          </p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
 </ion-content>

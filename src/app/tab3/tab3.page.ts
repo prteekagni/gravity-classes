@@ -3,9 +3,10 @@ import { AuthService } from "../services/auth.service";
 import { DataService } from "../services/data.service";
 import { Router } from "@angular/router";
 import { SharedService } from "../services/shared.service";
-import { Platform, AlertController } from "@ionic/angular";
+import { Platform, AlertController, ModalController } from "@ionic/angular";
 import * as firebase from "firebase";
 import { SocialSharing } from "@ionic-native/social-sharing/ngx";
+import { GenericModalPage } from "../generic-modal/generic-modal.page";
 @Component({
   selector: "app-tab3",
   templateUrl: "tab3.page.html",
@@ -23,7 +24,8 @@ export class Tab3Page {
     private sharedService: SharedService,
     private platform: Platform,
     private alertController: AlertController,
-    private socialSharing: SocialSharing
+    private socialSharing: SocialSharing,
+    private modalController: ModalController
   ) {}
 
   // ngOnInit(): void {
@@ -107,5 +109,18 @@ export class Tab3Page {
     });
 
     await alert.present();
+  }
+
+  async openScoreModal() {
+    const modal = await this.modalController.create({
+      component: GenericModalPage,
+      backdropDismiss: true,
+      cssClass: "generic-modal",
+      componentProps: { type: "scores" },
+    });
+    modal.onDidDismiss().then((data: any) => {
+      console.log(data);
+    });
+    modal.present();
   }
 }

@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Quiz</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-card *ngFor="let item of quizzes" (click)="onClick(item)" class="note-card">
+    <ion-card-header>
+      <ion-card-subtitle>{{item.subject| titlecase}} ({{item.class}}<sup>th</sup>)
+      </ion-card-subtitle>
+      <ion-card-title>
+        <p class="card-heading">
+          {{item.title}}
+        </p>
+        <p class="date" style="font-size: small;">
+          {{item.createdAt.toDate() | date}}
+        </p>
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div style="display: flex; flex-direction: column;">
+        <p class="card-description" style="    font-size: large;
+      color: black;
+      font-weight: bold;">
+          Total Marks : {{item.totalMarks}}
+        </p>
+        <p style="    font-size: large;
+                color: black;
+                font-weight: bold;">
+          Note : {{item.description}}
+        </p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

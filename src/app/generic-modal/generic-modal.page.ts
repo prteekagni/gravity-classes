@@ -39,6 +39,7 @@ export class GenericModalPage implements OnInit {
   subjects: any = [];
   subject;
   spinner;
+  scores = [];
   constructor(
     private actionSheetController: ActionSheetController,
     private dataService: DataService,
@@ -52,11 +53,34 @@ export class GenericModalPage implements OnInit {
   ngOnInit() {}
 
   ionViewWillEnter() {
-    this.dataService
-      .getUserInformation(firebase.auth().currentUser.uid)
-      .then((res: any) => {
-        this.user = res.data();
-      });
+    if (this.type == "scores") {
+      this.sharedService.displayLC();
+      this.dataService.getUserScores().then(
+        (querySnapshot: any) => {
+          if (!querySnapshot.empty) {
+            let i: any = {};
+            querySnapshot.forEach((element) => {
+              i = element.data();
+              i.id = element.id;
+              this.scores.push(i);
+            });
+            this.sharedService.dismissLC();
+          } else {
+            this.sharedService.dismissLC();
+          }
+        },
+        (err) => {
+          this.sharedService.dismissLC();
+        }
+      );
+    } else {
+      this.dataService
+        .getUserInformation(firebase.auth().currentUser.uid)
+        .then((res: any) => {
+          this.user = res.data();
+        });
+    }
+
     this.initializeBackButtonCustomHandler();
   }
   async uploadPhoto() {
@@ -309,5 +333,37 @@ export class GenericModalPage implements OnInit {
   rendered() {
     console.log("Rendered: ", Date.now());
     // this.sharedService.dismissLC();
+  }
+
+  doRefresh(event) {
+    if (this.type == "scores") {
+      this.sharedService.displayLC();
+
+      this.dataService.getUserScores().then(
+        (querySnapshot: any) => {
+          this.scores = [];
+
+          if (!querySnapshot.empty) {
+            let i: any = {};
+            querySnapshot.forEach((element) => {
+              i = element.data();
+              i.id = element.id;
+              this.scores.push(i);
+            });
+            this.sharedService.dismissLC();
+            event.target.complete();
+          } else {
+            event.target.complete();
+            this.sharedService.dismissLC();
+          }
+        },
+        (err) => {
+          event.target.complete();
+          this.sharedService.dismissLC();
+        }
+      );
+    } else {
+      event.target.complete();
+    }
   }
 }

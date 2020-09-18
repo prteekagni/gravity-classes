@@ -26,6 +26,12 @@
       </ion-row>
     </ion-card>
     <ion-list lines="none">
+      <ion-item button (click)="openScoreModal()" *ngIf="user.isProfileCompleted == true">
+        <ion-ripple-effect type="unbounded"></ion-ripple-effect>
+        <ion-icon slot="start" color="" name="people-circle-outline"></ion-icon>
+        <ion-label>View Scores</ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      </ion-item>
       <ion-item button (click)="editProfile()" *ngIf="user.isProfileCompleted == true">
         <ion-ripple-effect type="unbounded"></ion-ripple-effect>
         <ion-icon slot="start" color="" name="people-circle-outline"></ion-icon>
