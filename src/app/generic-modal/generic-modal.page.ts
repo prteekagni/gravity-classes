@@ -70,6 +70,9 @@ export class GenericModalPage implements OnInit {
           }
         },
         (err) => {
+          console.log(err);
+
+          this.sharedService.errorToast("Error, please try again.");
           this.sharedService.dismissLC();
         }
       );
@@ -359,6 +362,7 @@ export class GenericModalPage implements OnInit {
         },
         (err) => {
           event.target.complete();
+          this.sharedService.errorToast("Error, please try again.");
           this.sharedService.dismissLC();
         }
       );

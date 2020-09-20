@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { File } from "@ionic-native/file/ngx";
 import {
   FileTransfer,
@@ -11,6 +11,7 @@ import { DataService } from "../services/data.service";
 import { LectureDetailPage } from "../lecture-detail/lecture-detail.page";
 import { SharedService } from "../services/shared.service";
 import { FileEncryption } from "@ionic-native/file-encryption/ngx";
+import { ScreenOrientation } from "@ionic-native/screen-orientation/ngx";
 
 declare var cordova;
 @Component({
@@ -28,6 +29,8 @@ export class NotificationPage implements OnInit {
   dvStatus;
   hasVideo: boolean = false;
   encryptKey = "gravityClassesKey";
+  @ViewChild("header", { read: ElementRef }) header;
+
   constructor(
     private platform: Platform,
     private activatedRouter: ActivatedRoute,
@@ -38,7 +41,8 @@ export class NotificationPage implements OnInit {
     private transfer: FileTransfer,
     private file: File,
     private fileEncrption: FileEncryption,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private screenOrientation: ScreenOrientation
   ) {}
 
   ngOnInit() {
@@ -62,15 +66,7 @@ export class NotificationPage implements OnInit {
     });
   }
 
-  playVideoLocal() {
-    // this.sharedService.displayLC();
-    // this.VideoPlayer.play(this.note.videoLink, {
-    //   scalingMode: 1,
-    // }).then((res: any) => {
-    //   console.log(res);
-    //   this.sharedService.dismissLC();
-    // });
-  }
+  playVideoLocal() {}
 
   async onClick() {
     let url: any = [];
@@ -81,8 +77,7 @@ export class NotificationPage implements OnInit {
       .checkDir(this.file.applicationStorageDirectory, this.note.title)
       .then(
         async () => {
-          console.log("directory already present");
-          let items = JSON.parse(localStorage.getItem("Keys"));
+          let items = JSON.parse(localStorage.getItem(this.note.title));
           const modal = await this.modalController.create({
             component: LectureDetailPage,
             componentProps: { items: items, title: "Notes" },
@@ -90,28 +85,22 @@ export class NotificationPage implements OnInit {
           await modal.present();
         },
         async (err) => {
-          // this.sharedService.displayLC();
           const loading = await this.loadingController.create({
             cssClass: "my-custom-class",
             message: "Downloading Notes.",
-            
           });
           await loading.present();
           const fileTransfer: FileTransferObject = this.transfer.create();
           for (var i = 0; i < this.note.notesImage.length; i++) {
             await this.uploadImageAsPromise(this.note.notesImage[i]).then(
               async (res: any) => {
-                console.log(res);
-                console.log("download complete: " + res);
                 url.push(
                   (<any>window).Ionic.WebView.convertFileSrc(res.toURL())
                 );
-                console.log(url);
                 if (length == url.length) {
-                  // this.sharedService.dismissLC();
                   loading.dismiss();
-                  localStorage.setItem("Keys", JSON.stringify(url));
-                  let items = JSON.parse(localStorage.getItem("Keys"));
+                  localStorage.setItem(this.note.title, JSON.stringify(url));
+                  let items = JSON.parse(localStorage.getItem(this.note.title));
                   const modal = await this.modalController.create({
                     component: LectureDetailPage,
                     componentProps: { items: items, title: "Notes" },
@@ -142,29 +131,10 @@ export class NotificationPage implements OnInit {
         )
         .then(
           (entry) => {
-            // this.fileEncrption
-            //   .encrypt(entry.toURL(), this.encryptKey)
-            //   .then((res) => {
-            //     resolve(entry);
-            //   });
-
-            // cordova.plugins.disusered.safe.encrypt(
-            //   entry.toURL(),
-            //   this.encryptKey,
-            //   success,
-            //   error
-            // );
             resolve(entry);
-
-            function success(encryptedFile) {
-              console.log("Encrypted file: " + encryptedFile);
-            }
-            function error() {
-              console.log("Error with cryptographic operation");
-            }
           },
           (error) => {
-            // handle error
+            reject();
           }
         );
     });
@@ -183,11 +153,22 @@ export class NotificationPage implements OnInit {
     );
   }
   ionViewWillLeave() {
-    // clearInterval(this.categoryTimeOut);
+    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
     this.unsubscribeBackEvent.unsubscribe();
   }
 
   ionViewWillEnter() {
+    this.screenOrientation.unlock();
+    this.screenOrientation.onChange().subscribe((res) => {
+      if (screen.orientation.type == "landscape-primary") {
+        this.header.nativeElement.style.display = "none";
+      } else {
+        this.header.nativeElement.style.display = "block";
+      }
+    });
+    
+
+
     this.initializeBackButtonCustomHandler();
   }
 

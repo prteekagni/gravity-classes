@@ -34,6 +34,7 @@ export class QuizPage implements OnInit {
       },
       (err) => {
         this.sharedService.dismissLC();
+        this.sharedService.errorToast("Error, please try again.");
       }
     );
   }
@@ -77,7 +78,7 @@ export class QuizPage implements OnInit {
       },
       (err) => {
         event.target.complete();
-
+        this.sharedService.errorToast("Error, please try again.");
         this.sharedService.dismissLC();
       }
     );

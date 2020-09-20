@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header #header>
   <ion-toolbar color="primary">
     <ion-title>{{note?.title}}</ion-title>
     <ion-buttons slot="start">
@@ -13,9 +13,9 @@
       <ion-col size="12">
         <div class="video-list" no-padding mode="md">
           <div class="imagediv">
-            <img [src]="note.image" alt="" style="width: 100%" *ngIf="!hasVideo" />
+            <!-- <img [src]="note.image" alt="" style="width: 100%" *ngIf="!hasVideo" /> -->
             <video id="myVideo" controls playsinline width="100%" preload="auto" poster="{{note.image}}"
-              controlsList="nodownload" *ngIf="hasVideo">
+              controlsList="nodownload">
               <source src="{{note.videoLink}}" type="video/mp4" />
             </video>
           </div>

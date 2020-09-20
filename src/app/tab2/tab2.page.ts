@@ -207,6 +207,7 @@ export class Tab2Page {
         (err) => {
           console.log(err);
           event.target.complete();
+          this.sharedService.errorToast("Error, please try again.");
         }
       );
     });

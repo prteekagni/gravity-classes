@@ -58,31 +58,41 @@ export class Tab1Page {
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
-    this.dataService.getFacts().then((querySnapshot) => {
-      if (!querySnapshot.empty) {
-        let i: any = {};
-        querySnapshot.forEach((element) => {
-          i = element.data();
-          i.id = element.id;
-          this.facts.push(i);
-        });
-      } else {
-        this.sharedService.errorToast("No Lecture available");
+    this.dataService.getFacts().then(
+      (querySnapshot) => {
+        if (!querySnapshot.empty) {
+          let i: any = {};
+          querySnapshot.forEach((element) => {
+            i = element.data();
+            i.id = element.id;
+            this.facts.push(i);
+          });
+        } else {
+          this.sharedService.errorToast("No Lecture available");
+        }
+      },
+      (err) => {
+        this.sharedService.errorToast("Error, please try again.");
       }
-    });
+    );
 
-    this.dataService.getAnnounements().then((querySnapshot) => {
-      if (!querySnapshot.empty) {
-        let i: any = {};
-        querySnapshot.forEach((element) => {
-          i = element.data();
-          i.id = element.id;
-          this.announce.push(i);
-        });
-      } else {
-        this.sharedService.errorToast("No Lecture available");
+    this.dataService.getAnnounements().then(
+      (querySnapshot) => {
+        if (!querySnapshot.empty) {
+          let i: any = {};
+          querySnapshot.forEach((element) => {
+            i = element.data();
+            i.id = element.id;
+            this.announce.push(i);
+          });
+        } else {
+          this.sharedService.errorToast("No Lecture available");
+        }
+      },
+      (err) => {
+        this.sharedService.errorToast("Error, please try again.");
       }
-    });
+    );
   }
 
   // joinMeeting() {

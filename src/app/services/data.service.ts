@@ -183,6 +183,7 @@ export class DataService {
     return this.angularFireStore.firestore
       .collection("usersQuiz")
       .where("uid", "==", firebase.auth().currentUser.uid)
+      .orderBy("createdAt", "desc")
       .get();
   }
 
@@ -190,6 +191,7 @@ export class DataService {
     return this.angularFireStore.firestore
       .collection("quiz")
       .where("class", "==", localStorage.getItem("Class"))
+      .orderBy("createdAt", "desc")
       .get();
   }
 }
