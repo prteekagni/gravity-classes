@@ -1,8 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DataService } from "../services/data.service";
-import { Platform } from "@ionic/angular";
+import { ModalController, Platform } from "@ionic/angular";
 import { SharedService } from "../services/shared.service";
+import { GenericModalPage } from "../generic-modal/generic-modal.page";
 
 @Component({
   selector: "app-doubt-detail",
@@ -20,7 +21,8 @@ export class DoubtDetailPage implements OnInit {
     private dataService: DataService,
     private platform: Platform,
     private sharedService: SharedService,
-    private router: Router
+    private router: Router,
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -55,10 +57,21 @@ export class DoubtDetailPage implements OnInit {
   }
   ionViewWillLeave() {
     // clearInterval(this.categoryTimeOut);
+
     this.unsubscribeBackEvent.unsubscribe();
   }
 
   ionViewWillEnter() {
     this.initializeBackButtonCustomHandler();
+  }
+
+  async openFullImage() {
+    const modal = await this.modalController.create({
+      component: GenericModalPage,
+      backdropDismiss: true,
+      cssClass: "generic-modal",
+      componentProps: { type: "image", imageLink: this.doubt.solutionimage },
+    });
+    modal.present();
   }
 }

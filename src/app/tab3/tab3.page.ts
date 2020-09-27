@@ -65,8 +65,6 @@ export class Tab3Page {
 
   async logOut() {
     let user = firebase.auth().currentUser;
-    // this.sharedService.displayLC();
-
     this.dataService.setLoginStatus(user.uid, false).then(() => {
       this.authService.logOut().then(() => {});
       // this.sharedService.dismissLC();
@@ -102,7 +100,7 @@ export class Tab3Page {
   async contactUs() {
     const alert = await this.alertController.create({
       header: "Contact Us",
-      message: `Gravity Classes by Parshant Kumar. 
+      message: `Gravity Classes by Prashant Kumar. 
         <br>Email : prashant.it2012@gmail.com.
         <br> Phone Number : 6387056155.`,
       buttons: ["OK"],

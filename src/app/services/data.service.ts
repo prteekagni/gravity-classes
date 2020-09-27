@@ -194,4 +194,11 @@ export class DataService {
       .orderBy("createdAt", "desc")
       .get();
   }
+
+  getPromotionVideos() {
+    return this.angularFireStore.firestore
+      .collection("promotionalVideos")
+      .orderBy("createdAt", "desc")
+      .get();
+  }
 }

@@ -137,6 +137,41 @@ export class DoubtsPage implements OnInit {
     });
     modal.present();
   }
+
+  doRefresh(event) {
+    this.doubts = [];
+    this.sharedService.displayLC();
+    this.dataService.getAllDoubts(this.subject).then(
+      (querySnapshot: any) => {
+        if (!querySnapshot.empty) {
+          let i: any = {};
+          querySnapshot.forEach((element) => {
+            i = element.data();
+            i.id = element.id;
+            if (i.uid == this.user.uid) {
+              i.userDoubt = true;
+            }
+            this.doubts.push(i);
+          });
+          this.sharedService.dismissLC();
+          event.target.complete();
+        } else {
+          this.sharedService.errorToast("No doubt to show.");
+          this.sharedService.dismissLC();
+          event.target.complete();
+        }
+      },
+      (err) => {
+        this.sharedService.dismissLC();
+        event.target.complete();
+        console.log(err);
+      }
+    );
+  }
+
+  showStatusToast(status) {
+    this.sharedService.showToast("Your Doubt is " + status);
+  }
 }
 
 // this.authService.currentUserDetail().then((res: any) => {

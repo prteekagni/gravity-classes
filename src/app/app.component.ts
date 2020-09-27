@@ -23,7 +23,6 @@ export class AppComponent {
     private imagePicker: ImagePicker,
     private fcm: FCM,
     private alertController: AlertController,
-
     private screenOrientation: ScreenOrientation
   ) {
     this.initializeApp();

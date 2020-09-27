@@ -5,6 +5,7 @@ import {
   ActionSheetController,
   Platform,
   ModalController,
+  NavParams,
 } from "@ionic/angular";
 import { DataService } from "../services/data.service";
 
@@ -13,6 +14,7 @@ import { Router } from "@angular/router";
 import * as firebase from "firebase";
 import { NgForm } from "@angular/forms";
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
+import { ScreenOrientation } from "@ionic-native/screen-orientation/ngx";
 
 declare var plugins;
 
@@ -40,6 +42,9 @@ export class GenericModalPage implements OnInit {
   subject;
   spinner;
   scores = [];
+  imageLink = "";
+  @ViewChild("header", { read: ElementRef }) header;
+  sliderOpt;
   constructor(
     private actionSheetController: ActionSheetController,
     private dataService: DataService,
@@ -47,12 +52,20 @@ export class GenericModalPage implements OnInit {
     private sharedService: SharedService,
     private router: Router,
     private platform: Platform,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private navParams: NavParams,
+    private screenOrientation: ScreenOrientation
   ) {}
 
   ngOnInit() {}
 
   ionViewWillEnter() {
+    this.sliderOpt = {
+      zoom: {
+        maxRatio: 1,
+      },
+    };
+
     if (this.type == "scores") {
       this.sharedService.displayLC();
       this.dataService.getUserScores().then(
@@ -76,12 +89,22 @@ export class GenericModalPage implements OnInit {
           this.sharedService.dismissLC();
         }
       );
-    } else {
+    } else if (this.type == "doubt") {
       this.dataService
         .getUserInformation(firebase.auth().currentUser.uid)
         .then((res: any) => {
           this.user = res.data();
         });
+    } else if (this.type == "image") {
+      this.screenOrientation.unlock();
+      this.screenOrientation.onChange().subscribe((res) => {
+        if (screen.orientation.type == "landscape-primary") {
+          this.header.nativeElement.style.display = "none";
+        } else {
+          this.header.nativeElement.style.display = "block";
+        }
+      });
+      console.log(this.navParams.get("imageLink"));
     }
 
     this.initializeBackButtonCustomHandler();
@@ -311,15 +334,16 @@ export class GenericModalPage implements OnInit {
       }
     );
   }
+
   ionViewWillLeave() {
     this.sharedService.dismissLC();
-
-    // clearInterval(this.categoryTimeOut);
+    if (this.type == "image") {
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    }
     this.unsubscribeBackEvent.unsubscribe();
   }
 
   checkImageIsRendered() {
-    // this.sharedService.displayLC();
     this.doubtImg.nativeElement.onload = (event) => {
       console.log("Loaded: ", Date.now());
       const interval = setInterval(() => {
@@ -335,7 +359,6 @@ export class GenericModalPage implements OnInit {
   }
   rendered() {
     console.log("Rendered: ", Date.now());
-    // this.sharedService.dismissLC();
   }
 
   doRefresh(event) {

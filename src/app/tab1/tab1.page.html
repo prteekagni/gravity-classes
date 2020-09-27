@@ -3,21 +3,22 @@
     <ion-title slot="start">
       Gravity Classes
     </ion-title>
-    <!-- <ion-icon name="notifications-outline" style="right: 35px; position: absolute; font-size: 20px; top: 15px;">
-    </ion-icon> -->
-    <!-- <ion-icon slot="end" name="mail-unread-outline"
-      style="right: 10px; position: absolute; font-size: 20px; top: 15px;"></ion-icon> -->
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- <iframe src="https://iframe.dacast.com/live/5ecc01b2-c955-5ea1-94a2-894b5611b556/3759df0e-c6d0-61a2-ce86-026f65178a05"
-    width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay" allowfullscreen webkitallowfullscreen
-    mozallowfullscreen oallowfullscreen msallowfullscreen></iframe> -->
-  <!-- <ion-button (click)="joinMeeting()" fill="solid" shape="block">
-    <ion-icon slot="start" name="add"></ion-icon>
-    Join Meeting
-  </ion-button> -->
+  <ion-row>
+    <ion-col size="12">
+      <ion-slides mode="ios" pager="ios" scrollbar="ios" *ngIf="promotionalVideos.length > 0">
+        <ion-slide *ngFor="let item of promotionalVideos">
+          <video id="myVideo" controls playsinline width="100%" preload="auto" poster="{{item.image}}"
+            controlsList="nodownload">
+            <source src="{{item.videoLink}}" type="video/mp4" />
+          </video>
+        </ion-slide>
+      </ion-slides>
+    </ion-col>
+  </ion-row>
   <ion-row>
     <ion-col size="12">
       <ion-slides mode="ios" pager="ios" scrollbar="ios">

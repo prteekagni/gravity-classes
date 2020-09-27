@@ -13,9 +13,9 @@
       <ion-col size="12">
         <div class="video-list" no-padding mode="md">
           <div class="imagediv">
-            <!-- <img [src]="note.image" alt="" style="width: 100%" *ngIf="!hasVideo" /> -->
+            <img [src]="note.image" alt="" style="width: 100%" *ngIf="!hasVideo" />
             <video id="myVideo" controls playsinline width="100%" preload="auto" poster="{{note.image}}"
-              controlsList="nodownload">
+              controlsList="nodownload" *ngIf="hasVideo">
               <source src="{{note.videoLink}}" type="video/mp4" />
             </video>
           </div>
@@ -26,14 +26,7 @@
             <div class="title-block">
               <div class="title">
                 {{note.title}}
-                <!-- <ion-icon slot="end" name="download-outline" style="
-                      margin-right: 0px;
-                      position: absolute;
-                      right: 15px;
-                      font-size: x-large;
-                    "></ion-icon> -->
               </div>
-
               <div class="extra">
                 <div class="date">{{note.createdAt.toDate() | date}}</div>
               </div>

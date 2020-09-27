@@ -5,7 +5,7 @@
   <ion-toolbar color="primary">
     <ion-list>
       <ion-radio-group #radioGroup>
-        <ion-item *ngFor="let item of subjects " style="--padding-start: 16px;">
+        <ion-item *ngFor="let item of subjects " style="--padding-start: 16px">
           <ion-label>{{item |titlecase}}</ion-label>
           <ion-radio slot="start" value="{{item}}" (ionFocus)="selectedSubject(item)" name="{{item}}"></ion-radio>
         </ion-item>
@@ -15,6 +15,9 @@
 </ion-header>
 
 <ion-content #pageContent>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ng-container *ngIf="isloaded; else elseTemplate">
     <ion-fab vertical="bottom" horizontal="end" slot="fixed" (click)="openDoubtModal()">
       <ion-fab-button>
@@ -26,22 +29,36 @@
       <ion-col size="12" class="ion-text-center">
         <ion-list>
           <ion-item *ngFor="let item of doubts" class="doubt-card">
-            <ion-card style="width: 96%;" (click)="doubtDetail(item)" class="doubt-card">
+            <ion-card style="width: 96%" (click)="doubtDetail(item)" class="doubt-card">
               <ion-card-header>
+                <ion-icon (click)="showStatusToast('Not Answered')" name="checkmark-circle-outline" style="
+                    position: absolute;
+                    right: 10px;
+                    font-size: xx-large;
+                    color: red;
+                    font-weight: bold;
+                  " *ngIf="item.solution == ''"></ion-icon>
+                <ion-icon (click)="showStatusToast('Answered')" name="checkmark-done-circle-outline" style="
+                                      position: absolute;
+                                      right: 10px;
+                                      font-size: xx-large;
+                                      color: green;
+                                      font-weight: bold;
+                                    " *ngIf="item.solution != ''"></ion-icon>
+
                 <ion-card-subtitle>{{item.subject |titlecase}} {{item.class}}<sup>th</sup>
-                  <span *ngIf="item.userDoubt == true" style="font-weight: bold; color: black;">(Your Doubt)</span>
+                  <span *ngIf="item.userDoubt == true" style="font-weight: bold; color: black">(Your Doubt)</span>
                 </ion-card-subtitle>
                 <ion-card-title>
-                  <p style="margin-bottom: 0px;" class="card-heading">
+                  <p style="margin-bottom: 0px; text-transform: capitalize" class="card-heading">
                     {{item.title}}
                   </p>
                   <p class="date">{{item.createdAt.toDate() | date}}</p>
                 </ion-card-title>
               </ion-card-header>
               <ion-card-content>
-                <div style="display: flex; flex-direction: row;">
-                  <p class="card-description" style="font-size: large;
-    text-overflow: ellipsis;">
+                <div style="display: flex; flex-direction: row">
+                  <p class="card-description" style="font-size: large; text-overflow: ellipsis">
                     Question: {{item?.description}}
                   </p>
                 </div>
@@ -54,20 +71,19 @@
   </ng-container>
   <ng-template #elseTemplate>
     <ion-list class="skeletonText">
-
       <ion-item>
         <ion-thumbnail slot="start">
           <ion-skeleton-text animated></ion-skeleton-text>
         </ion-thumbnail>
         <ion-label>
           <h3>
-            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
           </h3>
           <p>
-            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
           </p>
           <p>
-            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
           </p>
         </ion-label>
       </ion-item>
@@ -77,13 +93,13 @@
         </ion-thumbnail>
         <ion-label>
           <h3>
-            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
           </h3>
           <p>
-            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
           </p>
           <p>
-            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
           </p>
         </ion-label>
       </ion-item>
@@ -93,13 +109,13 @@
         </ion-thumbnail>
         <ion-label>
           <h3>
-            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
           </h3>
           <p>
-            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
           </p>
           <p>
-            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
           </p>
         </ion-label>
       </ion-item>
@@ -109,13 +125,13 @@
         </ion-thumbnail>
         <ion-label>
           <h3>
-            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
           </h3>
           <p>
-            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
           </p>
           <p>
-            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
           </p>
         </ion-label>
       </ion-item>
@@ -125,13 +141,13 @@
         </ion-thumbnail>
         <ion-label>
           <h3>
-            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
           </h3>
           <p>
-            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
           </p>
           <p>
-            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
           </p>
         </ion-label>
       </ion-item>
@@ -141,13 +157,13 @@
         </ion-thumbnail>
         <ion-label>
           <h3>
-            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
           </h3>
           <p>
-            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
           </p>
           <p>
-            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
           </p>
         </ion-label>
       </ion-item>
@@ -157,13 +173,13 @@
         </ion-thumbnail>
         <ion-label>
           <h3>
-            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
           </h3>
           <p>
-            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
           </p>
           <p>
-            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
           </p>
         </ion-label>
       </ion-item>
@@ -173,13 +189,13 @@
         </ion-thumbnail>
         <ion-label>
           <h3>
-            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
           </h3>
           <p>
-            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
           </p>
           <p>
-            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
           </p>
         </ion-label>
       </ion-item>
@@ -189,17 +205,16 @@
         </ion-thumbnail>
         <ion-label>
           <h3>
-            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
           </h3>
           <p>
-            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
           </p>
           <p>
-            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
           </p>
         </ion-label>
       </ion-item>
-
     </ion-list>
   </ng-template>
 </ion-content>

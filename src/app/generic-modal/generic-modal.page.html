@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header #header>
   <ion-toolbar color="primary">
     <ion-title>Submit {{type | titlecase}}</ion-title>
     <ion-buttons slot="end">
@@ -83,10 +83,21 @@
             Marks : {{item.marks}}/{{item.totalMarks}}
           </p>
           <p style="font-size: large; color: black; font-weight: bold">
-            Suggestion: {{item?.suggestion}}
+            Remarks: {{item?.suggestion}}
           </p>
         </div>
       </ion-card-content>
     </ion-card>
   </ng-container>
+  <ng-container *ngIf="type == 'image'">
+    <ion-slides [options]="sliderOpt" zoom>
+      <ion-slide>
+        <div class="swiper-zoom-container">
+          <img [src]="imageLink" alt="">
+        </div>
+      </ion-slide>
+    </ion-slides>
+
+  </ng-container>
+
 </ion-content>

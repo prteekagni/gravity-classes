@@ -30,7 +30,7 @@
           </ion-card-header>
           <ion-card-content>
             <ng-container *ngIf="!notanswered; else elseTemplate">
-              <img [src]="doubt.solutionimage" alt="" *ngIf="doubt.solutionimage !==''" />
+              <img [src]="doubt.solutionimage" alt="" *ngIf="doubt.solutionimage !==''" (click)="openFullImage()" />
               <p class="card-description">
                 {{doubt.solution}}
               </p>

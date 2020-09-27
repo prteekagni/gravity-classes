@@ -16,6 +16,7 @@ export class Tab1Page {
   public unsubscribeBackEvent: Subscription;
   facts: any = [];
   announce: any = [];
+  promotionalVideos: any = [];
   slideOpts = {
     initialSlide: 0,
     speed: 400,
@@ -56,8 +57,6 @@ export class Tab1Page {
   }
 
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
     this.dataService.getFacts().then(
       (querySnapshot) => {
         if (!querySnapshot.empty) {
@@ -93,37 +92,23 @@ export class Tab1Page {
         this.sharedService.errorToast("Error, please try again.");
       }
     );
-  }
 
-  // joinMeeting() {
-  //   let options = {
-  //     custom_meeting_id: "Test",
-  //     no_share: true,
-  //     no_audio: false,
-  //     no_video: false,
-  //     no_driving_mode: true,
-  //     no_invite: true,
-  //     no_meeting_end_message: true,
-  //     no_dial_in_via_phone: false,
-  //     no_dial_out_to_phone: false,
-  //     no_disconnect_audio: true,
-  //     no_meeting_error_message: true,
-  //     no_unmute_confirm_dialog: true, // Android only
-  //     no_webinar_register_dialog: false, // Android only
-  //     no_titlebar: false,
-  //     no_bottom_toolbar: false,
-  //     no_button_video: false,
-  //     no_button_audio: false,
-  //     no_button_share: true,
-  //     no_button_participants: false,
-  //     no_button_more: false,
-  //     no_text_password: true,
-  //     no_text_meeting_id: false,
-  //     no_button_leave: false,
-  //   };
-  //   this.zoomService
-  //     .joinMeeting("73301874673", "uV03KK", "Test", options)
-  //     .then((success: any) => console.log(success))
-  //     .catch((error: any) => console.log(error));
-  // }
+    this.dataService.getPromotionVideos().then(
+      (querySnapshot) => {
+        if (!querySnapshot.empty) {
+          let i: any = {};
+          querySnapshot.forEach((element) => {
+            i = element.data();
+            i.id = element.id;
+            this.promotionalVideos.push(i);
+          });
+        } else {
+          // this.sharedService.errorToast("No Lecture available");
+        }
+      },
+      (err) => {
+        this.sharedService.errorToast("Error, please try again.");
+      }
+    );
+  }
 }
